@@ -1,33 +1,30 @@
 import curses  # https://docs.python.org/3/howto/curses.html
 
-# starting
-stdscr = curses.initscr()
-curses.noecho()
-curses.cbreak()
-
-stdscr.keypad(True)
+# example: https://gist.github.com/claymcleod/b670285f334acd56ad1c
+# tutorial: https://steven.codes/blog/cs10/curses-tutorial/
 
 
-stdscr.addstr(0, 0, "Current mode: Typing mode", curses.A_REVERSE)
-stdscr.refresh()
+def curses_interface(stdscr):
+    stdscr.clear()
 
-# new window
-begin_x = 20
-begin_y = 7
-height = 5
-width = 40
-win = curses.newwin(height, width, begin_y, begin_x)
-win.addstr(0, 0, "Top-right of sub-window", curses.A_BOLD)
+    stdscr.addstr(0, 0, "Current mode: Typing mode", curses.A_REVERSE)
+    stdscr.refresh()
 
-win.refresh()
+    # new window
+    begin_x = 20
+    begin_y = 7
+    height = 5
+    width = 40
+    win = curses.newwin(height, width, begin_y, begin_x)
+    win.addstr(0, 0, "Top-right of sub-window", curses.A_BOLD)
 
-while True:
-    c = stdscr.getch()
-    if c == ord('q'):
-        break
+    win.refresh()
 
-# terminating
-curses.nocbreak()
-stdscr.keypad(False)
-curses.echo()
-curses.endwin()
+    while True:
+        c = stdscr.getch()
+        if c == ord('q'):
+            break
+
+
+def main():
+    curses.wrapper(curses_interface)
