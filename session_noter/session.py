@@ -2,7 +2,7 @@ import datetime
 import mss
 
 
-class Noter:
+class Session:
     def __init__(self, writer, tester, charter, duration):
         # ToDo: dynamic adding of attributes
         self._notes = []
@@ -14,7 +14,7 @@ class Noter:
         self._charter = charter
         self.add_note('duration', self._charter)
 
-        self._duration = int(duration)
+        self._duration = duration
         self.add_note('duration', self._duration)
 
         self._session_start = None

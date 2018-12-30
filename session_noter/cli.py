@@ -1,11 +1,13 @@
 import cmd
+import datetime
 import sys
 
-from noter import Noter
+from session import Session
+from writer_csv import WriterCSV
 
 
 class CLI(cmd.Cmd):
-    def __init__(self, config, writer):
+    def __init__(self, config):
         for abbreviation in config['note_types']:
             CLI._add_note_type_to_interface(abbreviation, config['note_types'][abbreviation])
 
@@ -13,19 +15,33 @@ class CLI(cmd.Cmd):
 
         tester = input("tester: ")
         charter = input("charter: ")
-        duration = input("duration: ")
-        self._noter = Noter(writer, tester, charter, duration)
+        while True:
+            try:
+                duration = int(input("duration (minutes): "))
+            except ValueError:
+                print("Please provide a number greater than 0.")
+                continue
 
-        ready_to_go = input('Press Enter to start your session.\n')
-        if ready_to_go != '':
-            sys.exit()
+            if duration <= 0:
+                print("Please provide a number greater than 0.")
+                continue
+            else:
+                break
 
-        self._noter.start_session()
+        filename = f"{datetime.datetime.now().strftime('%Y%m%dT%H%M%S')}-{tester}.csv"
+        with WriterCSV(filename) as writer:
+            self._noter = Session(writer, tester, charter, duration)
 
-        self.prompt = self.create_prompt()
-        self.cmdloop(intro='Type help or ? to list commands.')
+            ready_to_go = input('Press Enter to start your session.\n')
+            if ready_to_go != '':
+                sys.exit()
 
-        self._post_session(config['post_session'])
+            self._noter.start_session()
+
+            self.prompt = self.create_prompt()
+            self.cmdloop(intro='Type help or ? to list commands.')
+
+            self._post_session(config['post_session'])
 
     @classmethod
     def _add_note_type_to_interface(cls, abbreviation, note_type):

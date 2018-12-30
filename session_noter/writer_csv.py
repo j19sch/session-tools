@@ -2,8 +2,11 @@ import csv
 
 
 class WriterCSV:
+    def __init__(self, filename):
+        self._filename = filename
+
     def __enter__(self):
-        self._file = open('noter.csv', 'w', newline='')
+        self._file = open(self._filename, 'w', newline='')
         self._writer = csv.writer(self._file, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         return self
 

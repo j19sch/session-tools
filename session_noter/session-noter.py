@@ -2,7 +2,6 @@ import argparse
 import configparser
 
 from cli import CLI
-from writer_csv import WriterCSV
 import curses_cli
 
 
@@ -19,5 +18,4 @@ if __name__ == '__main__':
     if args.curses or config['general']['interface'] == "curses":
         curses_cli.main()
     else:
-        with WriterCSV() as writer:
-            interface = CLI(config, writer)
+        interface = CLI(config)
