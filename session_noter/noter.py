@@ -41,6 +41,10 @@ class Noter:
         self._session_start = now
         self.add_note('session start', '', now)
 
+    def end_session(self):
+        now = datetime.datetime.now()
+        self.add_note('session end', '', now)
+
     def elapsed_seconds_and_percentage(self):
         elapsed_seconds = (datetime.datetime.now() - self._session_start).total_seconds()
         elapsed_percentage = None if self.duration is None else elapsed_seconds / (self.duration * 60)

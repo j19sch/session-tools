@@ -93,5 +93,5 @@ class CLI(cmd.Cmd):
 
     def do_exit(self, arg):
         """exit"""
-        self._noter.add_note('end', None)
+        self._noter.end_session()
         return True
