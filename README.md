@@ -25,3 +25,8 @@ Purpose of the package as such is to support session-based test management (SBTM
 - support for Linux, Mac, Windows
 - everything is configurable
 - pluggable: additional interfaces, additional exporters, etc.
+
+
+## More on SBTM
+- http://www.satisfice.com/articles/sbtm.pdf
+- http://www.satisfice.com/sbtm/
