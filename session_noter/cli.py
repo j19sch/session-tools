@@ -2,40 +2,24 @@ import cmd
 import datetime
 import sys
 
-from session import Session
-from writer_csv import WriterCSV
+from noter import Noter
 
 
 class CLI(cmd.Cmd):
     def __init__(self, config):
         for abbreviation in config['note_types']:
             CLI._add_note_type_to_interface(abbreviation, config['note_types'][abbreviation])
-
         super().__init__()
 
-        tester = input("tester: ")
-        charter = input("charter: ")
-        while True:
-            try:
-                duration = int(input("duration (minutes): "))
-            except ValueError:
-                print("Please provide a number greater than 0.")
-                continue
-
-            if duration <= 0:
-                print("Please provide a number greater than 0.")
-                continue
-            else:
-                break
+        tester, charter, duration = self._ask_for_session_info()
 
         filename = f"{datetime.datetime.now().strftime('%Y%m%dT%H%M%S')}-{tester}.csv"
-        with WriterCSV(filename) as writer:
-            self._noter = Session(writer, tester, charter, duration)
+        with Noter(filename, tester, charter, duration) as noter:
+            self._noter = noter
 
             ready_to_go = input('Press Enter to start your session.\n')
             if ready_to_go != '':
                 sys.exit()
-
             self._noter.start_session()
 
             self.prompt = self.create_prompt()
@@ -52,9 +36,26 @@ class CLI(cmd.Cmd):
         inner_add_note_type.__name__ = f"do_{abbreviation}"
         setattr(cls, inner_add_note_type.__name__, inner_add_note_type)
 
+    @staticmethod
+    def _ask_for_session_info():
+        tester = input("tester: ")
+        charter = input("charter: ")
+        while True:
+            try:
+                duration = int(input("duration (minutes): "))
+            except ValueError:
+                print("Please provide a number greater than 0.")
+                continue
+
+            if duration <= 0:
+                print("Please provide a number greater than 0.")
+                continue
+            else:
+                break
+        return tester, charter, duration
+
     def postcmd(self, stop, line):
         self.prompt = self.create_prompt()
-
         return stop
 
     def create_prompt(self):
