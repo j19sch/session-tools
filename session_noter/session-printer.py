@@ -17,7 +17,7 @@ with open(f"{args.file}", newline='', mode='r') as session_file:
 
     for row in csv_reader:
         if reader_state == "pre-session":
-            if row[1] != "session start":
+            if not row[1] == "session start":
                 pre_session.append(row)
             else:
                 reader_state = "session"
