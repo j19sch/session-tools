@@ -19,7 +19,7 @@ class Noter:
         self._writer = csv.writer(self._file, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         self.add_note('tester', self._tester)
         self.add_note('charter', self._charter)
-        self.add_note('duration', self._duration)
+        self.add_note('duration', f"{self._duration} minutes")
         return self
 
     def __exit__(self, exc_type, exc_val, exc_traceback):
@@ -42,8 +42,7 @@ class Noter:
         self.add_note('session start', '', now)
 
     def end_session(self):
-        now = datetime.datetime.now()
-        self.add_note('session end', '', now)
+        self.add_note('session end', '')
 
     def elapsed_seconds_and_percentage(self):
         elapsed_seconds = (datetime.datetime.now() - self._session_start).total_seconds()
