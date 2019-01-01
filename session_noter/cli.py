@@ -66,9 +66,11 @@ class CLI(cmd.Cmd):
         else:
             return '(ntr {:.0f}) '.format(elapsed_seconds / 60)
 
+    def emptyline(self):
+        pass  # otherwise last nonempty command entered is repeated
+
     def _post_session(self, config):
-        for item in config['entries'].split(","):
-            # ToDo - move this to noter.py: logging activity duration is part of notes, not cli
+        for item in config['task_breakdown'].split(","):
             post_session_entry = input(f"{item}: ")
             self._noter.add_note(item, f"{post_session_entry}%")
 

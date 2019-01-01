@@ -22,6 +22,6 @@ Purpose of the package as such is to support session-based test management (SBTM
 - GUI (minimal floating and full)
 
 ### Architecture
-- Linux, Mac, Windows
+- support for Linux, Mac, Windows
 - everything is configurable
 - pluggable: additional interfaces, additional exporters, etc.
