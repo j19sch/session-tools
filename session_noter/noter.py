@@ -17,8 +17,8 @@ class Noter:
     def __enter__(self):
         self._file = open(self._filename, 'w', newline='')
         self._writer = csv.writer(self._file, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        self.add_note('duration', self._tester)
-        self.add_note('duration', self._charter)
+        self.add_note('tester', self._tester)
+        self.add_note('charter', self._charter)
         self.add_note('duration', self._duration)
         return self
 
