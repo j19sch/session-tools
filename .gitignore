@@ -1,8 +1,14 @@
+# python
 *.pyc
 __pycache__/
 
+# virtual environment
 venv/
-.idea/
 
+# editors
+.idea/
+.vscode/
+
+# output files
 *.csv
 *.md
