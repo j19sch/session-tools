@@ -19,7 +19,7 @@ class Noter:
         self._writer = csv.writer(self._file, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         self.add_note('tester', self._tester)
         self.add_note('charter', self._charter)
-        self.add_note('duration', f"{self._duration} minutes")
+        self.add_note('duration', self._duration)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_traceback):

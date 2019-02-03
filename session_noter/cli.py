@@ -72,7 +72,7 @@ class CLI(cmd.Cmd):
     def _post_session(self, config):
         for item in config['task_breakdown'].split(","):
             post_session_entry = input(f"{item}: ")
-            self._noter.add_note(item, f"{post_session_entry}%")
+            self._noter.add_note(item, post_session_entry)
 
     def do_list(self, arg):
         """list all notes so far, latest n notes, or all notes of a specific type"""
