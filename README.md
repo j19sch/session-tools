@@ -18,6 +18,14 @@ In the `./session_noter` directory:
 - `python session-analyzer.py <file or files>` - summarize session notes file(s) in markdown
 
 
+## What's left to do
+- config file validation
+- auto-tests
+- note types configurability in printer and analyzer
+- interfaces beside CLI
+- much much more
+
+
 ## What I was thinking
 
 ### Core design ideas
