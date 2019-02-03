@@ -1,0 +1,20 @@
+general:
+  interface: cli
+
+note_types:
+  question:
+    command: q
+  bug:
+    command: b
+  issue:
+    command: i
+  setup:
+    command: s
+  note:
+    command: n
+
+post_session:
+  task_breakdown:
+    - setup
+    - testing
+    - investigating

@@ -5,7 +5,7 @@ def session_parser(filename):
     pre_session = []
     post_session = []
     session = []
-    with open(f"{filename}", newline='', mode='r') as session_file:
+    with open(filename, newline='', mode='r') as session_file:
         csv_reader = csv.reader(session_file, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
 
         reader_state = "pre-session"

@@ -7,8 +7,8 @@ from noter import Noter
 
 class CLI(cmd.Cmd):
     def __init__(self, config):
-        for abbreviation in config['note_types']:
-            CLI._add_note_type_to_interface(abbreviation, config['note_types'][abbreviation])
+        for note_type in config['note_types']:
+            CLI._add_note_type_to_interface(config['note_types'][note_type]['command'], note_type)
         super().__init__()
 
         tester, charter, duration = self._ask_for_session_info()
@@ -70,7 +70,7 @@ class CLI(cmd.Cmd):
         pass  # otherwise last nonempty command entered is repeated
 
     def _post_session(self, config):
-        for item in config['task_breakdown'].split(","):
+        for item in config['task_breakdown']:
             post_session_entry = input(f"{item}: ")
             self._noter.add_note(item, post_session_entry)
 
