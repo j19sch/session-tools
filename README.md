@@ -1,30 +1,35 @@
 # Session Noter
 
-Python package to play around with:
-- interfaces (text-based and graphical)
+Small suite of tools for session-based test management (SBTM)
+
+
+## What to do with it
+
+### Setup & installation
+- grab a copy of this repo, i.e. download, clone or fork
+- install Python 3
+- create a virtual environment and activate it: https://docs.python.org/3/tutorial/venv.html
+- install `requirements.txt`
+
+### Usage
+In the `./session_noter` directory:
+- `python session-noter.py` - record session notes
+- `python session-printer.py <file>` - convert session notes files to markdown
+- `python session-analyzer.py <file or files>` - summarize session notes file(s) in markdown
+
+
+## What I was/am thinking
+
+### Core design ideas
+- support for linux, mac, windows
+- everything is configurable
+- plug-in support: additional interfaces, additional output formats, etc.
+
+### My learning goals
+- interfaces (cli, curses, gui)
 - data processing and reporting
 - modularity and plugins
 - meta-programming
-
-Purpose of the package as such is to support session-based test management (SBTM) - inspired by Shmuel Gershon's Rapid Reporter (http://testing.gershon.info/reporter/).
-
-
-## The plan
-
-### Functionality
-- session-noter: recording session notes
-- session-printer: exporting/printing notes in different formats (md, html, ...)
-- session-analyzer: analyzing session notes
-
-### Interfaces
-- CLI
-- curses
-- GUI (minimal floating and full)
-
-### Architecture
-- support for Linux, Mac, Windows
-- everything is configurable
-- pluggable: additional interfaces, additional exporters, etc.
 
 
 ## More on SBTM

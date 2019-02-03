@@ -1,6 +1,3 @@
-general:
-  interface: cli
-
 note_types:
   question:
     command: q
