@@ -31,9 +31,9 @@ def analyze_notes(notes):
         elif item[1] == "issue":
             issues.append({"issue": item[2],
                            "session_notes": notes})
-        elif item[1] == "questions":
-            bugs.append({"questions": item[2],
-                         "session_notes": notes})
+        elif item[1] == "question":
+            questions.append({"question": item[2],
+                              "session_notes": notes})
 
     try:
         numbers["actual_duration"] = round((end_time - start_time).seconds / 60)
@@ -62,7 +62,7 @@ if __name__ == '__main__':
         analyze_notes(file)
 
     with open(f"analysis-{datetime.now().strftime('%Y%m%dT%H%M%S')}.md", mode='w') as md_file:
-        md_file.write("# session analysis\n")
+        md_file.write("# Session analysis\n")
 
         col_width_default = 32
         col_width_wide = 52
@@ -107,11 +107,11 @@ if __name__ == '__main__':
 
         md_file.write("## The numbers\n")
         md_file.write(f"| {'File':{col_width_default}} | "
-                      f"{'Planned (min)':{col_width_narrow}} | "
-                      f"{'Spent (min)':{col_width_narrow}} | "
-                      f"{'Setup (%)':{col_width_narrow}} | "
-                      f"{'Testing (%)':{col_width_narrow}} | "
-                      f"{'Investigating (%)':{col_width_narrow}} |\n")
+                      f"{'planned (min)':{col_width_narrow}} | "
+                      f"{'spent (min)':{col_width_narrow}} | "
+                      f"{'setup (%)':{col_width_narrow}} | "
+                      f"{'testing (%)':{col_width_narrow}} | "
+                      f"{'investigating (%)':{col_width_narrow}} |\n")
         md_file.write(f"| {'':-^{col_width_default}} | "
                       f"{':' + '-'*(col_width_narrow-2) + ':'} | " 
                       f"{':' + '-'*(col_width_narrow-2) + ':'} | "
@@ -166,8 +166,8 @@ if __name__ == '__main__':
         if len(questions) > 0:
             md_file.write(f"| {'File':{col_width_default}} | {'Question':{col_width_wide}} |\n")
             md_file.write(f"| {'':-^{col_width_default}} | {'':-^{col_width_wide}} |\n")
-            for issue in questions:
-                md_file.write(f"| {issue['session_notes']:{col_width_default}} | {issue['question']:{col_width_wide}} |\n")
+            for question in questions:
+                md_file.write(f"| {question['session_notes']:{col_width_default}} | {question['question']:{col_width_wide}} |\n")
         else:
             md_file.write("No questions.")
         md_file.write("\n")
