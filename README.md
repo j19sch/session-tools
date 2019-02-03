@@ -18,7 +18,7 @@ In the `./session_noter` directory:
 - `python session-analyzer.py <file or files>` - summarize session notes file(s) in markdown
 
 
-## What I was/am thinking
+## What I was thinking
 
 ### Core design ideas
 - support for linux, mac, windows
