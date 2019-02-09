@@ -3,7 +3,7 @@ import sys
 import yaml
 
 
-def read_config_file():
+def read_config_file() -> dict:
     path_to_this_file = os.path.dirname(os.path.realpath(__file__))
 
     with open(os.path.join(path_to_this_file, 'config.yml'), 'r') as config_file:
@@ -14,7 +14,7 @@ def read_config_file():
     return config
 
 
-def validate_config_file(config):
+def validate_config_file(config: dict):
     commands = []
     for note_type in config['note_types']:
         if config['note_types'][note_type]['command'] in commands:
