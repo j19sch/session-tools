@@ -1,2 +1,4 @@
 mss
 pyyaml
+
+pytest

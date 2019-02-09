@@ -2,12 +2,18 @@
 *.pyc
 __pycache__/
 
+# pytest
+.pytest_cache/
+
 # virtual environment
 venv/
 
 # editors
 .idea/
 .vscode/
+
+# output dirs
+notes/
 
 # output files
 *.csv

@@ -1,6 +1,8 @@
 import csv
 import datetime
 import mss
+import os
+import pathlib
 
 
 class Noter:
@@ -15,7 +17,9 @@ class Noter:
         self._session_start = None
 
     def __enter__(self):
-        self._file = open(self._filename, 'w', newline='')
+        file_path = os.path.join(os.getcwd(), 'notes')
+        pathlib.Path(file_path).mkdir(exist_ok=True)
+        self._file = open(os.path.join(file_path, self._filename), 'w', newline='')
         self._writer = csv.writer(self._file, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         self.add_note('tester', self._tester)
         self.add_note('charter', self._charter)
