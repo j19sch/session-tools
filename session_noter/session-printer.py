@@ -1,6 +1,7 @@
 import argparse
 
 from parser import session_parser
+from markdown_writer import MarkDownWriter
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -9,22 +10,26 @@ if __name__ == '__main__':
 
     pre_session_entries, session_entries, post_session_entries = session_parser(args.file)
 
-    with open(f"{args.file[:-4]}.md", mode='w') as md_file:
-        md_file.write("# session notes\n")
+    with MarkDownWriter(f"{args.file[:-4]}-new.md") as md_writer:
+        md_writer.header_1("Session notes")
 
+        # tester, charter, duration
         for entry in pre_session_entries:
             if entry[1] == "duration":
-                md_file.write(f"**{entry[1]}**: {entry[2]} minutes  \n")
+                md_writer.add_line(f"**{entry[1]}**: {entry[2]} minutes")
             else:
-                md_file.write(f"**{entry[1]}**: {entry[2]}  \n")
-        md_file.write("---\n")
+                md_writer.add_line(f"**{entry[1]}**: {entry[2]}")
 
+        md_writer.separator()
+
+        # task breakdown
         for entry in post_session_entries:
-            md_file.write(f"**{entry[1]}**: {entry[2]}%  \n")
-        md_file.write("---\n")
+            md_writer.add_line(f"**{entry[1]}**: {entry[2]}%")
 
+        md_writer.separator()
+
+        # session log
         column_width = 19
-        md_file.write(f"| {'Timestamp':{column_width}} | {'Note Type':{column_width}} | Note |\n")
-        md_file.write(f"| {'':-^{column_width}} | {'':-^{column_width}} | ---- |\n")
-        for entry in session_entries:
-            md_file.write(f"| {entry[0]:{column_width}} | {entry[1]:{column_width}} | {entry[2]} |\n")
+        columns = [('Timestamp', column_width, "L"), ("Note type", column_width, "L"), ("Note", column_width, "L")]
+        data = [(entry[0], entry[1], entry[2]) for entry in session_entries]
+        md_writer.table(columns, data)
