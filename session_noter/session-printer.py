@@ -1,6 +1,6 @@
 import argparse
 
-from parser import session_parser
+from parser import session_reader
 from markdown_writer import MarkDownWriter
 
 if __name__ == '__main__':
@@ -8,7 +8,7 @@ if __name__ == '__main__':
     parser.add_argument("file", help="the file you want to convert to markdown")
     args = parser.parse_args()
 
-    pre_session_entries, session_entries, post_session_entries = session_parser(args.file)
+    pre_session_entries, session_entries, post_session_entries = session_reader(args.file)
 
     with MarkDownWriter(f"{args.file[:-4]}-new.md") as md_writer:
         md_writer.header_1("Session notes")
