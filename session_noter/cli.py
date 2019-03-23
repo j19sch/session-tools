@@ -7,6 +7,8 @@ from noter import Noter
 
 class CLI(cmd.Cmd):
     def __init__(self, config):
+        print('Welcome to session-noter!\n')
+
         for note_type in config['note_types']:
             CLI._add_note_type_to_interface(config['note_types'][note_type]['command'], note_type)
         super().__init__()
