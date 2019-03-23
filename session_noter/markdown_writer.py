@@ -1,5 +1,5 @@
 class MarkDownWriter:
-    def __init__(self, filename, mode="w"):
+    def __init__(self, filename: str, mode="w"):
         self.filename = filename
         self.mode = mode
 
