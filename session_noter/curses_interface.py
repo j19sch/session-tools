@@ -1,4 +1,5 @@
 import curses  # https://docs.python.org/3/howto/curses.html
+from copy import copy
 
 # example: https://gist.github.com/claymcleod/b670285f334acd56ad1c
 # lib docs: https://docs.python.org/3/library/curses.html
@@ -25,28 +26,42 @@ def curses_interface(stdscr):
     stdscr.addstr(0, 0, "Welcome to session noter!", curses.A_REVERSE)
     stdscr.refresh()
 
-    win_summary_outer = curses.newwin(15 + 2, 15 + 2, 2, 0)
-    win_summary_outer.box()
-    win_summary_outer.refresh()
-    win_summary = win_summary_outer.derwin(15, 15, 1, 1)
+    summary_lns = 15
+    summary_cols = 15
+    prompt_lns = 1
+    prompt_cols = copy(summary_cols)
+    left_pane_lns = summary_lns + prompt_lns + 3
+    left_pane_cols = summary_cols + 2
+
+    left_pane = curses.newwin(left_pane_lns, left_pane_cols, 2, 0)
+    left_pane.box()
+    left_pane.hline(summary_lns + 1, 1, 0, left_pane_cols - 2)
+    left_pane.refresh()
+
+    win_summary = left_pane.derwin(summary_lns, summary_cols, 1, 1)
     update_summary_window(win_summary, entries)
 
-    win_prompt = curses.newwin(1 + 2, 15 + 2, 18, 0)
-    win_prompt.box()
-    win_prompt.addstr(1, 1, "1234567890", curses.A_BOLD)
+    win_prompt = left_pane.derwin(prompt_lns, prompt_cols, summary_lns + 2, 1)
+    win_prompt.addstr(0, 1, "1234567890123", curses.A_BOLD)
     win_prompt.refresh()
 
-    win_display_outer = curses.newwin(15 + 2, 80 + 2, 2, 18)
-    win_display_outer.box()
-    win_display_outer.refresh()
+    display_lns = copy(summary_lns)
+    display_cols = 80
+    enter_lns = 1
+    enter_cols = copy(display_cols)
+    right_pane_lns = display_lns + enter_lns + 3
+    right_pane_cols = display_cols + 2
+
+    right_pane = curses.newwin(right_pane_lns, right_pane_cols, 2, left_pane_cols + 1)
+    right_pane.box()
+    right_pane.hline(display_lns + 1, 1, 0, right_pane_cols - 2)
+    right_pane.refresh()
+
     win_display = curses.newpad(500, 80)
     win_display.scrollok(True)
     win_display.idlok(True)
 
-    win_enter_outer = curses.newwin(1 + 2, 80 + 2, 18, 18)
-    win_enter_outer.box()
-    win_enter_outer.refresh()
-    win_enter = win_enter_outer.derwin(1, 68, 1, 1)
+    win_enter = right_pane.derwin(enter_lns, enter_cols, display_lns + 2, 1)
 
     while True:
         entry = win_enter.getstr()  # better than Textbox
