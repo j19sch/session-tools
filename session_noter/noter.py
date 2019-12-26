@@ -28,7 +28,8 @@ class Noter:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_traceback):
-        self._file.close()
+        if self._filename is not None:
+            self._file.close()
 
     @property
     def duration(self):
