@@ -1,6 +1,8 @@
 import curses  # https://docs.python.org/3/howto/curses.html
 from copy import copy
 from datetime import datetime
+from functools import partial
+from noter import Noter
 
 # example: https://gist.github.com/claymcleod/b670285f334acd56ad1c
 # lib docs: https://docs.python.org/3/library/curses.html
@@ -11,9 +13,6 @@ from datetime import datetime
 # curses.textpad.rectangle(win, uly, ulx, lry, lrx)
 # window.derwin(begin_y, begin_x) // window.derwin(nlines, ncols, begin_y, begin_x)
 # window.addstr(y, x, str[, attr])
-from functools import partial
-
-from noter import Noter
 
 
 def update_summary_window(window, entries, note_types):
@@ -63,8 +62,12 @@ def curses_interface(stdscr, config=None):
     stdscr.refresh()
     curses.curs_set(1)
 
-    filename = f"{datetime.now().strftime('%Y%m%dT%H%M%S')}-{tester}.csv"
-    with Noter(None, tester, charter, duration) as noter:
+    if config['output'] is not None:
+        filename = f"{datetime.now().strftime('%Y%m%dT%H%M%S')}-{tester}.csv"
+    else:
+        filename = None
+
+    with Noter(filename, tester, charter, duration) as noter:
 
         summary_lns = 15
         summary_cols = 15

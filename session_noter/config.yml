@@ -1,5 +1,6 @@
 noter:
   interface: curses
+  output:
 
 note_types:
   - type: question
