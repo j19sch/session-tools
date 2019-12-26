@@ -18,7 +18,7 @@ from noter import Noter
 def update_summary_window(window, entries, note_types):
     window.clear()
     window.addstr(0, 0, "SUMMARY", curses.A_REVERSE)
-    window.addstr(1, 0, f"Entries: {len(entries)}")
+    window.addstr(1, 0, f"entries: {len(entries)}")
 
     note_types_count = {}
     for note_type in note_types:
@@ -37,6 +37,23 @@ def update_summary_window(window, entries, note_types):
     window.refresh()
 
 
+def post_session_questions(window, config, noter):
+    window.clear()
+
+    position = 1
+    for item in config['task_breakdown']:
+        window.addstr(position, 1, item)
+        post_session_entry = window.getstr(position, 16).decode()
+        noter.add_note(item, post_session_entry)
+        position += 1
+
+    window.addstr(position + 1, 1, "press any key to quit")
+
+    curses.curs_set(0)
+    window.getkey()
+    curses.curs_set(1)
+
+
 def curses_interface(stdscr, config=None):
     curses.echo()  # echo characters to screen
 
@@ -52,9 +69,9 @@ def curses_interface(stdscr, config=None):
     session_start_window.addstr(3, 2, "duration: ")
     session_start_window.addstr(5, 2, "press any key to start session")
 
-    tester = session_start_window.getstr(1, 16)
-    charter = session_start_window.getstr(2, 16)
-    duration = session_start_window.getstr(3, 16)
+    tester = session_start_window.getstr(1, 16).decode()
+    charter = session_start_window.getstr(2, 16).decode()
+    duration = session_start_window.getstr(3, 16).decode()
     curses.curs_set(0)
     session_start_window.getkey()
 
@@ -108,11 +125,17 @@ def curses_interface(stdscr, config=None):
 
         while True:
             entry = win_enter.getstr()  # better than Textbox
+
             if entry == b"exit":
+                noter.end_session()
+                post_session_questions(right_pane, config['post_session'], noter)
                 break
 
             decoded_entry = entry.decode()
-            note_type_command, note = decoded_entry.split(" ", maxsplit=1)
+            try:
+                note_type_command, note = decoded_entry.split(" ", maxsplit=1)
+            except ValueError:
+                note_type_command, note = "n", decoded_entry
 
             # ToDo: decide if to replace try/except with input validation
             try:
