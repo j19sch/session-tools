@@ -11,22 +11,34 @@ from datetime import datetime
 # curses.textpad.rectangle(win, uly, ulx, lry, lrx)
 # window.derwin(begin_y, begin_x) // window.derwin(nlines, ncols, begin_y, begin_x)
 # window.addstr(y, x, str[, attr])
+from functools import partial
+
 from noter import Noter
 
 
-def update_summary_window(window, entries):
+def update_summary_window(window, entries, note_types):
     window.clear()
     window.addstr(0, 0, "SUMMARY", curses.A_REVERSE)
     window.addstr(1, 0, f"Entries: {len(entries)}")
-    note_types = sorted(set([note['type'] for note in entries]))
-    position = 2
+
+    note_types_count = {}
     for note_type in note_types:
-        window.addstr(position, 0, f"{note_type}: {len([_ for _ in entries if _['type'] == note_type])}")
+        note_types_count[note_type['type']] = 0
+
+    found_note_types = set([note['type'] for note in entries])
+
+    for note_type in found_note_types:
+        note_types_count[note_type] = len([_ for _ in entries if _['type'] == note_type])
+
+    position = 3
+    for note_type in sorted(note_types_count):
+        window.addstr(position, 0, f"{note_type}: {note_types_count[note_type]}")
         position += 1
+
     window.refresh()
 
 
-def curses_interface(stdscr):
+def curses_interface(stdscr, config=None):
     curses.echo()  # echo characters to screen
 
     stdscr.clear()
@@ -45,7 +57,7 @@ def curses_interface(stdscr):
     charter = session_start_window.getstr(2, 16)
     duration = session_start_window.getstr(3, 16)
     curses.curs_set(0)
-    char_entry = session_start_window.getkey()
+    session_start_window.getkey()
 
     stdscr.clear()
     stdscr.refresh()
@@ -67,7 +79,7 @@ def curses_interface(stdscr):
         left_pane.refresh()
 
         win_summary = left_pane.derwin(summary_lns, summary_cols, 1, 1)
-        update_summary_window(win_summary, noter.session_notes)
+        update_summary_window(win_summary, noter.session_notes, config['note_types'])
 
         win_prompt = left_pane.derwin(prompt_lns, prompt_cols, summary_lns + 2, 1)
         win_prompt.addstr(0, 1, "1234567890123", curses.A_BOLD)
@@ -97,7 +109,14 @@ def curses_interface(stdscr):
                 break
 
             decoded_entry = entry.decode()
-            note_type, note = decoded_entry.split(" ", maxsplit=1)
+            note_type_command, note = decoded_entry.split(" ", maxsplit=1)
+
+            # ToDo: decide if to replace try/except with input validation
+            try:
+                note_type = next(_['type'] for _ in config['note_types'] if _['command'] == note_type_command)
+            except StopIteration:
+                note_type = note_type_command
+
             noter.add_note(note_type, note)
 
             notes = "\n".join(note['content'] for note in noter.session_notes)
@@ -105,13 +124,10 @@ def curses_interface(stdscr):
             win_display.addstr(3, 0, notes)
             position = 3 + max(0, len(noter.notes) - 15)
             win_display.refresh(position, 0, 3, 19, 2+15, 18 + 80)
-            update_summary_window(win_summary, noter.session_notes)
+            update_summary_window(win_summary, noter.session_notes, config['note_types'])
             win_enter.clear()
 
 
-def main():
-    curses.wrapper(curses_interface)
-
-
-if __name__ == '__main__':
-    main()
+def interface_wrapper(config):
+    curses_interface_with_config = partial(curses_interface, config=config)
+    curses.wrapper(curses_interface_with_config)

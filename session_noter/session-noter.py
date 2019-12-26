@@ -1,7 +1,7 @@
 import argparse
 
 from cli import CLI
-import curses_interface
+from curses_interface import interface_wrapper
 from utils import read_config_file
 
 
@@ -13,6 +13,6 @@ if __name__ == '__main__':
     config = read_config_file()
 
     if args.curses or config['noter']['interface'] == "curses":
-        curses_interface.main()
+        interface_wrapper(config)
     else:
-        interface = CLI(config)
+        CLI(config)
