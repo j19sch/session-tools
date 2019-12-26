@@ -9,8 +9,8 @@ class CLI(cmd.Cmd):
     def __init__(self, config):
         print('Welcome to session-noter!\n')
 
-        for note_type in config['note_types']:
-            CLI._add_note_type_to_interface(config['note_types'][note_type]['command'], note_type)
+        for _ in config['note_types']:
+            CLI._add_note_types_to_interface(_['type'], _['command'])
         super().__init__()
 
         tester, charter, duration = self._ask_for_session_info()
@@ -30,7 +30,7 @@ class CLI(cmd.Cmd):
             self._post_session(config['post_session'])
 
     @classmethod
-    def _add_note_type_to_interface(cls, abbreviation, note_type):
+    def _add_note_types_to_interface(cls, note_type, abbreviation):
         def inner_add_note_type(self, arg):
             self._noter.add_note(note_type, arg)
 

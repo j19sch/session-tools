@@ -2,15 +2,15 @@ noter:
   interface: curses
 
 note_types:
-  question:
+  - type: question
     command: q
-  bug:
+  - type: bug
     command: b
-  issue:
+  - type: issue
     command: i
-  setup:
+  - type: setup
     command: s
-  note:
+  - type: note
     command: n
 
 post_session:
