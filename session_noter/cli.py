@@ -15,7 +15,7 @@ class CLI(cmd.Cmd):
 
         tester, charter, duration = self._ask_for_session_info()
 
-        if config['output'] is not None:
+        if config['noter']['output'] is not None:
             filename = f"{datetime.datetime.now().strftime('%Y%m%dT%H%M%S')}-{tester}.csv"
         else:
             filename = None

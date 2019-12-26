@@ -62,7 +62,7 @@ def curses_interface(stdscr, config=None):
     stdscr.refresh()
     curses.curs_set(1)
 
-    if config['output'] is not None:
+    if config['noter']['output'] is not None:
         filename = f"{datetime.now().strftime('%Y%m%dT%H%M%S')}-{tester}.csv"
     else:
         filename = None
