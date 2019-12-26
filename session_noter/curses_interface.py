@@ -13,6 +13,7 @@ from noter import Noter
 # curses.textpad.rectangle(win, uly, ulx, lry, lrx)
 # window.derwin(begin_y, begin_x) // window.derwin(nlines, ncols, begin_y, begin_x)
 # window.addstr(y, x, str[, attr])
+# window.hline(y, x, ch, n)
 
 
 def update_summary_window(window, entries, note_types):
@@ -34,6 +35,15 @@ def update_summary_window(window, entries, note_types):
         window.addstr(position, 0, f"{note_type}: {note_types_count[note_type]}")
         position += 1
 
+    window.refresh()
+
+
+def update_prompt_window(window, noter):
+    elapsed_seconds, elapsed_percentage = noter.elapsed_seconds_and_percentage()
+    the_time = f"{elapsed_seconds / 60:.0f}/{str(noter.duration)}"
+    window.addstr(0, 1, the_time, curses.A_BOLD)
+    the_percentage = f"{elapsed_percentage:.1%}"
+    window.addstr(0, 9, the_percentage, curses.A_BOLD)
     window.refresh()
 
 
@@ -71,7 +81,7 @@ def curses_interface(stdscr, config=None):
 
     tester = session_start_window.getstr(1, 16).decode()
     charter = session_start_window.getstr(2, 16).decode()
-    duration = session_start_window.getstr(3, 16).decode()
+    duration = int(session_start_window.getstr(3, 16).decode())
     curses.curs_set(0)
     session_start_window.getkey()
 
@@ -85,9 +95,10 @@ def curses_interface(stdscr, config=None):
         filename = None
 
     with Noter(filename, tester, charter, duration) as noter:
+        noter.start_session()
 
         summary_lns = 15
-        summary_cols = 15
+        summary_cols = 16
         prompt_lns = 1
         prompt_cols = copy(summary_cols)
         left_pane_lns = summary_lns + prompt_lns + 3
@@ -102,8 +113,7 @@ def curses_interface(stdscr, config=None):
         update_summary_window(win_summary, noter.session_notes, config['note_types'])
 
         win_prompt = left_pane.derwin(prompt_lns, prompt_cols, summary_lns + 2, 1)
-        win_prompt.addstr(0, 1, "1234567890123", curses.A_BOLD)
-        win_prompt.refresh()
+        update_prompt_window(win_prompt, noter)
 
         display_lns = copy(summary_lns)
         display_cols = 80
@@ -125,6 +135,7 @@ def curses_interface(stdscr, config=None):
 
         while True:
             entry = win_enter.getstr()  # better than Textbox
+            update_prompt_window(win_prompt, noter)
 
             if entry == b"exit":
                 noter.end_session()
@@ -149,7 +160,7 @@ def curses_interface(stdscr, config=None):
 
             win_display.addstr(3, 0, notes)
             position = 3 + max(0, len(noter.notes) - 15)
-            win_display.refresh(position, 0, 3, 19, 2+15, 18 + 80)
+            win_display.refresh(position, 0, 3, 20, 2+15, 19 + 80)
             update_summary_window(win_summary, noter.session_notes, config['note_types'])
             win_enter.clear()
 
