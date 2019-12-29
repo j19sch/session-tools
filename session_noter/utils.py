@@ -16,8 +16,8 @@ def read_config_file() -> dict:
 
 def validate_config_file(config: dict):
     commands = []
-    for note_type in config['note_types']:
-        if config['note_types'][note_type]['command'] in commands:
-            sys.exit(f"Duplicate command in config.yml: {note_type}")
+    for _ in config['note_types']:
+        if _['command'] in commands:
+            sys.exit(f"Duplicate command in config.yml: {_['type']}")
         else:
-            commands.append(config['note_types'][note_type]['command'])
+            commands.append(_['command'])

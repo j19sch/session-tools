@@ -7,13 +7,19 @@ from noter import Noter
 
 class CLI(cmd.Cmd):
     def __init__(self, config):
-        for note_type in config['note_types']:
-            CLI._add_note_type_to_interface(config['note_types'][note_type]['command'], note_type)
+        print('Welcome to session-noter!\n')
+
+        for _ in config['note_types']:
+            CLI._add_note_types_to_interface(_['type'], _['command'])
         super().__init__()
 
         tester, charter, duration = self._ask_for_session_info()
 
-        filename = f"{datetime.datetime.now().strftime('%Y%m%dT%H%M%S')}-{tester}.csv"
+        if config['noter']['output'] is not None:
+            filename = f"{datetime.datetime.now().strftime('%Y%m%dT%H%M%S')}-{tester}.csv"
+        else:
+            filename = None
+
         with Noter(filename, tester, charter, duration) as noter:
             self._noter = noter
 
@@ -28,7 +34,7 @@ class CLI(cmd.Cmd):
             self._post_session(config['post_session'])
 
     @classmethod
-    def _add_note_type_to_interface(cls, abbreviation, note_type):
+    def _add_note_types_to_interface(cls, note_type, abbreviation):
         def inner_add_note_type(self, arg):
             self._noter.add_note(note_type, arg)
 

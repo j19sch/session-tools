@@ -8,7 +8,7 @@ Small suite of tools for session-based test management (SBTM)
 ### Setup & installation
 - grab a copy of this repo, i.e. download, clone or fork
 - install Python 3
-- create a virtual environment and activate it: https://docs.python.org/3/tutorial/venv.html
+- create a virtual environment and activate it: <https://docs.python.org/3/tutorial/venv.html>
 - install `requirements.txt`
 
 ### Usage
@@ -42,5 +42,5 @@ In the `./session_noter` directory:
 
 
 ## More on SBTM
-- http://www.satisfice.com/articles/sbtm.pdf
-- http://www.satisfice.com/sbtm/
+- <http://www.satisfice.com/articles/sbtm.pdf>
+- <http://www.satisfice.com/sbtm/>
