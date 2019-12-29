@@ -1,25 +1,45 @@
-import curses  # https://docs.python.org/3/howto/curses.html
-from copy import copy
+import curses
 from datetime import datetime
 from functools import partial
 from noter import Noter
 
-# example: https://gist.github.com/claymcleod/b670285f334acd56ad1c
-# lib docs: https://docs.python.org/3/library/curses.html
-# tutorial: https://steven.codes/blog/cs10/curses-tutorial/
-# how-to: https://docs.python.org/3.6/howto/curses.html
+"""
+curses docs:
+lib docs: https://docs.python.org/3/library/curses.html
+tutorial: https://steven.codes/blog/cs10/curses-tutorial/
+how-to: https://docs.python.org/3.6/howto/curses.html
+example: https://gist.github.com/claymcleod/b670285f334acd56ad1c
+"""
 
-# curses.newwin(nlines, ncols, begin_y, begin_x)
-# curses.textpad.rectangle(win, uly, ulx, lry, lrx)
-# window.derwin(begin_y, begin_x) // window.derwin(nlines, ncols, begin_y, begin_x)
-# window.addstr(y, x, str[, attr])
-# window.hline(y, x, ch, n)
+
+def prompt_for_session_info(main_window):
+    session_info_lines = 7
+    session_info_cols = 40
+    session_info_start_x = 9
+    session_info_start_y = 3
+    session_start_window = main_window.derwin(session_info_lines, session_info_cols, session_info_start_y, session_info_start_x)
+    session_start_window.addstr(0, 0, "tester: ")
+    session_start_window.addstr(1, 0, "charter: ")
+    session_start_window.addstr(2, 0, "duration: ")
+    session_start_window.addstr(4, 0, "press any key to start session")
+
+    tester = session_start_window.getstr(0, 12).decode()
+    charter = session_start_window.getstr(1, 12).decode()
+    duration = int(session_start_window.getstr(2, 12).decode())
+    curses.curs_set(0)
+    session_start_window.getkey()
+
+    main_window.clear()
+    main_window.refresh()
+    curses.curs_set(1)
+
+    return tester, charter, duration
 
 
 def update_summary_window(window, entries, note_types):
     window.clear()
-    window.addstr(0, 0, "SUMMARY", curses.A_REVERSE)
-    window.addstr(1, 0, f"entries: {len(entries)}")
+    window.addstr(0, 1, "SUMMARY", curses.A_REVERSE)
+    window.addstr(1, 1, f"entries: {len(entries)}")
 
     note_types_count = {}
     for note_type in note_types:
@@ -32,13 +52,13 @@ def update_summary_window(window, entries, note_types):
 
     position = 3
     for note_type in sorted(note_types_count):
-        window.addstr(position, 0, f"{note_type}: {note_types_count[note_type]}")
+        window.addstr(position, 1, f"{note_type}: {note_types_count[note_type]}")
         position += 1
 
     window.refresh()
 
 
-def update_prompt_window(window, noter):
+def update_timer_window(window, noter):
     elapsed_seconds, elapsed_percentage = noter.elapsed_seconds_and_percentage()
     the_time = f"{elapsed_seconds / 60:.0f}/{str(noter.duration)}"
     window.addstr(0, 1, the_time, curses.A_BOLD)
@@ -49,18 +69,26 @@ def update_prompt_window(window, noter):
 
 def post_session_questions(window, config, noter):
     window.clear()
+    window.refresh()
 
-    position = 1
+    post_session_lines = len(config['task_breakdown']) + 2
+    post_session_cols = 40
+    post_session_start_x = 9
+    post_session_start_y = 3
+
+    post_session_window = window.derwin(post_session_lines, post_session_cols, post_session_start_y, post_session_start_x)
+
+    position = 0
     for item in config['task_breakdown']:
-        window.addstr(position, 1, item)
-        post_session_entry = window.getstr(position, 16).decode()
+        post_session_window.addstr(position, 1, item)
+        post_session_entry = post_session_window.getstr(position, 16).decode()
         noter.add_note(item, post_session_entry)
         position += 1
 
-    window.addstr(position + 1, 1, "press any key to quit")
+    post_session_window.addstr(position + 1, 1, "press any key to quit")
 
     curses.curs_set(0)
-    window.getkey()
+    post_session_window.getkey()
     curses.curs_set(1)
 
 
@@ -68,26 +96,16 @@ def curses_interface(stdscr, config=None):
     curses.echo()  # echo characters to screen
 
     stdscr.clear()
-
-    # max y 61, max x 238
-    stdscr.addstr(0, 1, f"Welcome to session noter! max dimensions: {stdscr.getmaxyx()}", curses.A_REVERSE)
+    stdscr.addstr(0, 1, f"Welcome to session noter!")
     stdscr.refresh()
 
-    session_start_window = stdscr.derwin(7, 40, 3, 3)
-    session_start_window.addstr(1, 2, "tester: ")
-    session_start_window.addstr(2, 2, "charter: ")
-    session_start_window.addstr(3, 2, "duration: ")
-    session_start_window.addstr(5, 2, "press any key to start session")
+    main_lines = 24
+    main_cols = 120
+    main_start_x = 0
+    main_start_y = 2
+    main_window = stdscr.derwin(main_lines, main_cols, main_start_y, main_start_x)
 
-    tester = session_start_window.getstr(1, 16).decode()
-    charter = session_start_window.getstr(2, 16).decode()
-    duration = int(session_start_window.getstr(3, 16).decode())
-    curses.curs_set(0)
-    session_start_window.getkey()
-
-    stdscr.clear()
-    stdscr.refresh()
-    curses.curs_set(1)
+    tester, charter, duration = prompt_for_session_info(main_window)
 
     if config['noter']['output'] is not None:
         filename = f"{datetime.now().strftime('%Y%m%dT%H%M%S')}-{tester}.csv"
@@ -97,49 +115,69 @@ def curses_interface(stdscr, config=None):
     with Noter(filename, tester, charter, duration) as noter:
         noter.start_session()
 
-        summary_lns = 15
-        summary_cols = 16
-        prompt_lns = 1
-        prompt_cols = copy(summary_cols)
-        left_pane_lns = summary_lns + prompt_lns + 3
-        left_pane_cols = summary_cols + 2
+        left_window_lines = main_lines
+        left_window_cols = 18
+        left_window_start_y = 0
+        left_window_start_x = 0
+        left_window = main_window.derwin(left_window_lines, left_window_cols, left_window_start_y, left_window_start_x)
+        left_window.box()
 
-        left_pane = curses.newwin(left_pane_lns, left_pane_cols, 2, 0)
-        left_pane.box()
-        left_pane.hline(summary_lns + 1, 1, 0, left_pane_cols - 2)
-        left_pane.refresh()
+        timer_lines = 1
+        timer_cols = left_window_cols - 2
+        summary_lines = left_window_lines - timer_lines - 3
+        summary_cols = left_window_cols - 2
 
-        win_summary = left_pane.derwin(summary_lns, summary_cols, 1, 1)
-        update_summary_window(win_summary, noter.session_notes, config['note_types'])
+        summary_start_y = 1
+        summary_start_x = 1
+        timer_start_y = 1 + summary_lines + 2 - 1
+        timer_start_x = 1
 
-        win_prompt = left_pane.derwin(prompt_lns, prompt_cols, summary_lns + 2, 1)
-        update_prompt_window(win_prompt, noter)
+        left_window.hline(summary_lines + 1, 1, 0, left_window_cols - 2)
+        left_window.refresh()
 
-        display_lns = copy(summary_lns)
-        display_cols = 80
-        enter_lns = 1
-        enter_cols = copy(display_cols)
-        right_pane_lns = display_lns + enter_lns + 3
-        right_pane_cols = display_cols + 2
+        summary_window = left_window.derwin(summary_lines, summary_cols, summary_start_y, summary_start_x)
+        update_summary_window(summary_window, noter.session_notes, config['note_types'])
 
-        right_pane = curses.newwin(right_pane_lns, right_pane_cols, 2, left_pane_cols + 1)
-        right_pane.box()
-        right_pane.hline(display_lns + 1, 1, 0, right_pane_cols - 2)
-        right_pane.refresh()
+        timer_window = left_window.derwin(timer_lines, timer_cols, timer_start_y, timer_start_x)
+        update_timer_window(timer_window, noter)
 
-        win_display = curses.newpad(500, 80)
-        win_display.scrollok(True)
-        win_display.idlok(True)  # scrolllok and idlok take care of scrolling
+        right_window_lines = main_lines
+        right_window_cols = main_cols - left_window_cols
+        right_window_start_y = 0
+        right_window_start_x = left_window_cols
+        right_window = main_window.derwin(right_window_lines, right_window_cols, right_window_start_y, right_window_start_x)
+        right_window.box()
+        right_window.refresh()
 
-        win_enter = right_pane.derwin(enter_lns, enter_cols, display_lns + 2, 1)
+        notes_lines = summary_lines
+        notes_cols = right_window_cols - 2
+        prompt_lines = timer_lines
+        notes_pad_type_padding = 10
+        prompt_cols = right_window_cols - 2 - notes_pad_type_padding
+
+        notes_start_y_abs = main_start_y + right_window_start_y + 1
+        notes_start_x_abs = main_start_x + right_window_start_x + 1
+        prompt_start_y = 1 + notes_lines + 2 - 1
+        prompt_start_x = 1
+
+        right_window.hline(notes_lines + 1, 1, 0, right_window_cols - 2)
+        right_window.refresh()
+
+        notes_pad = curses.newpad(1000, notes_cols)
+        notes_pad.scrollok(True)
+        notes_pad.idlok(True)  # scrolllok and idlok take care of scrolling
+
+        prompt_window = right_window.derwin(prompt_lines, prompt_cols, prompt_start_y, prompt_start_x)
+        prompt_window.refresh()
 
         while True:
-            entry = win_enter.getstr()  # better than Textbox
-            update_prompt_window(win_prompt, noter)
+            pass
+            entry = prompt_window.getstr()
+            update_timer_window(timer_window, noter)
 
             if entry == b"exit":
                 noter.end_session()
-                post_session_questions(right_pane, config['post_session'], noter)
+                post_session_questions(right_window, config['post_session'], noter)
                 break
 
             decoded_entry = entry.decode()
@@ -156,15 +194,18 @@ def curses_interface(stdscr, config=None):
 
             noter.add_note(note_type, note)
 
-            notes = "\n".join(note['content'] for note in noter.session_notes)
+            notes = "\n".join(f"{note['type']:{notes_pad_type_padding - 1}} {note['content']}" for note in noter.session_notes)
+            notes_pad.addstr(0, 0, notes)
 
-            win_display.addstr(3, 0, notes)
-            position = 3 + max(0, len(noter.notes) - 15)
-            win_display.refresh(position, 0, 3, 20, 2+15, 19 + 80)
-            update_summary_window(win_summary, noter.session_notes, config['note_types'])
-            win_enter.clear()
+            len_of_session_notes = len(noter.notes) - 3 - 1
+            position = max(0, len_of_session_notes - notes_lines)
+            notes_pad.refresh(position, 0, notes_start_y_abs, notes_start_x_abs, notes_start_y_abs + notes_lines - 1, notes_start_x_abs + notes_cols - 1)
+
+            update_summary_window(summary_window, noter.session_notes, config['note_types'])
+            prompt_window.clear()
 
 
 def interface_wrapper(config):
     curses_interface_with_config = partial(curses_interface, config=config)
     curses.wrapper(curses_interface_with_config)
+
