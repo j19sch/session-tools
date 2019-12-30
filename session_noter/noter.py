@@ -21,7 +21,9 @@ class Noter:
             file_path = os.path.join(os.getcwd(), "notes")
             pathlib.Path(file_path).mkdir(exist_ok=True)
             self._notes_dir = file_path
-            self._file = open(os.path.join(self._notes_dir, self._filename), "w", newline="")
+            self._file = open(
+                os.path.join(self._notes_dir, self._filename), "w", newline=""
+            )
             self._writer = csv.writer(
                 self._file, delimiter=";", quotechar="|", quoting=csv.QUOTE_MINIMAL
             )
