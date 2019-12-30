@@ -26,18 +26,15 @@ def session_parser(files: list):
 
         for item in session:
             if item[1] == "session start":
-                start_time = datetime.strptime(item[0], '%Y-%m-%dT%H:%M:%S')
+                start_time = datetime.strptime(item[0], "%Y-%m-%dT%H:%M:%S")
             elif item[1] == "session end":
-                end_time = datetime.strptime(item[0], '%Y-%m-%dT%H:%M:%S')
+                end_time = datetime.strptime(item[0], "%Y-%m-%dT%H:%M:%S")
             elif item[1] == "bug":
-                bugs.append({"bug": item[2],
-                             "session_notes": file})
+                bugs.append({"bug": item[2], "session_notes": file})
             elif item[1] == "issue":
-                issues.append({"issue": item[2],
-                               "session_notes": file})
+                issues.append({"issue": item[2], "session_notes": file})
             elif item[1] == "question":
-                questions.append({"question": item[2],
-                                  "session_notes": file})
+                questions.append({"question": item[2], "session_notes": file})
 
         try:
             numbers["actual_duration"] = round((end_time - start_time).seconds / 60)
@@ -56,8 +53,10 @@ def session_reader(filename):
     pre_session = []
     post_session = []
     session = []
-    with open(filename, newline='', mode='r') as session_file:
-        csv_reader = csv.reader(session_file, delimiter=';', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    with open(filename, newline="", mode="r") as session_file:
+        csv_reader = csv.reader(
+            session_file, delimiter=";", quotechar="|", quoting=csv.QUOTE_MINIMAL
+        )
 
         reader_state = "pre-session"
 

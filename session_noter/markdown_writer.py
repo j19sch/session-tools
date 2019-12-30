@@ -68,4 +68,4 @@ class MarkDownWriter:
             elif item[0] in ("right", "R"):
                 separator.append(f"{' ' + '-'*(item[1]-1) + ': |'}")
         separator.append("\n")
-        self.markdown_file.write(''.join(separator))
+        self.markdown_file.write("".join(separator))
