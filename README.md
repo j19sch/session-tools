@@ -15,7 +15,6 @@ Small suite of tools for session-based test management (SBTM)
 In the `./session_noter` directory:
 - `python session-noter.py` - record session notes
     - prompt `(ntr 0/45 0.0%)`: 0 of 45 minutes elapsed, i.e. 0.0%
-    - `python session-noter.py -c`: curses interface with some rough edges (linux and mac os x only)
 - `python session-printer.py <file>` - convert session notes files to markdown
 - `python session-analyzer.py <file or files>` - summarize session notes file(s) in markdown
 
