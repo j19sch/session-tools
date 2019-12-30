@@ -1,5 +1,6 @@
 import cmd
 import datetime
+import math
 import sys
 
 from core.noter import Noter
@@ -67,18 +68,19 @@ class CLI(cmd.Cmd):
         return stop
 
     def create_prompt(self):
-        # ToDo: figure out this bug (ntr 1/1 54.9%)
         (
             elapsed_seconds,
             elapsed_percentage,
         ) = self._noter.elapsed_seconds_and_percentage()
 
+        elapsed_minutes = math.floor(elapsed_seconds / 60)
+
         if elapsed_percentage:
             return "(ntr {:.0f}/{:d} {:.1%}) ".format(
-                elapsed_seconds / 60, self._noter.duration, elapsed_percentage
+                elapsed_minutes, self._noter.duration, elapsed_percentage
             )
         else:
-            return "(ntr {:.0f}) ".format(elapsed_seconds / 60)
+            return "(ntr {:.0f}) ".format(elapsed_minutes)
 
     def emptyline(self):
         pass  # otherwise last nonempty command entered is repeated
