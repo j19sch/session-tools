@@ -16,9 +16,9 @@ Small suite of note-taking tools for session-based test management (SBTM)
 
 ### Setup & installation
 - grab a copy of this repo, i.e. download, clone or fork
-- install Python 3
+- make sure you have Python 3.6 or higher (`python -V` or `python3 -V`)
 - create a virtual environment and activate it: <https://docs.python.org/3/tutorial/venv.html>
-- install `requirements.txt`
+- install dependencies with `pip install -r requirements.txt`
 
 ### Usage
 In the `./session_noter` directory:
