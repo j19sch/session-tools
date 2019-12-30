@@ -6,7 +6,8 @@ import yaml
 def read_config_file() -> dict:
     path_to_this_file = os.path.dirname(os.path.realpath(__file__))
 
-    with open(os.path.join(path_to_this_file, "config.yml"), "r") as config_file:
+    # ToDo: determine path to file properly
+    with open(os.path.join(path_to_this_file, "..", "config.yml"), "r") as config_file:
         config = yaml.safe_load(config_file)
 
     validate_config_file(config)
