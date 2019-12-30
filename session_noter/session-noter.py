@@ -1,4 +1,4 @@
-from cli import CLI
+from core.cli import CLI
 from core.utils import read_config_file
 
 
