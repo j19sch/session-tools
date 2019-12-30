@@ -20,7 +20,8 @@ class Noter:
         if self._filename is not None:
             file_path = os.path.join(os.getcwd(), "notes")
             pathlib.Path(file_path).mkdir(exist_ok=True)
-            self._file = open(os.path.join(file_path, self._filename), "w", newline="")
+            self._notes_dir = file_path
+            self._file = open(os.path.join(self._notes_dir, self._filename), "w", newline="")
             self._writer = csv.writer(
                 self._file, delimiter=";", quotechar="|", quoting=csv.QUOTE_MINIMAL
             )
@@ -89,8 +90,11 @@ class Noter:
         return self._notes[-number:]
 
     def take_screenshot(self):
+        # ToDo: two screenshots during the same second results in the 2nd file overwriting the 1st
         timestamp = datetime.datetime.now()
+        filename = timestamp.strftime("%Y%m%dT%H%M%S.png")
+        screenshot_file = os.path.join(self._notes_dir, filename)
         with mss.mss() as sct:
-            sct.shot(output="{}.png".format(timestamp.strftime("%Y-%m-%dT%H%M%S")))
+            sct.shot(output=screenshot_file)
 
-        self.add_note("capture", "", timestamp=timestamp)
+        self.add_note("capture", filename, timestamp=timestamp)
