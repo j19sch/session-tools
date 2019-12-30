@@ -3,7 +3,7 @@ import datetime
 import math
 import sys
 
-from core.noter import Noter
+from session_noter.core.noter import Noter
 
 
 class CLI(cmd.Cmd):

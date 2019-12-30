@@ -1,7 +1,7 @@
 import argparse
 
-from modules.markdown_analyzer import markdown_analyzer
-from core.parser import session_parser
+from session_noter.modules.markdown_analyzer import markdown_analyzer
+from session_noter.core.parser import session_parser
 
 
 if __name__ == "__main__":
