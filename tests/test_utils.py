@@ -1,5 +1,5 @@
 import pytest
-from session_noter.utils import validate_config_file
+from session_noter.core.utils import validate_config_file
 
 
 def test_config_validation_duplicate_command():

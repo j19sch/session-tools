@@ -1,5 +1,5 @@
 from cli import CLI
-from utils import read_config_file
+from core.utils import read_config_file
 
 
 if __name__ == "__main__":

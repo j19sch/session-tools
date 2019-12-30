@@ -2,7 +2,7 @@ import cmd
 import datetime
 import sys
 
-from noter import Noter
+from core.noter import Noter
 
 
 class CLI(cmd.Cmd):
@@ -67,6 +67,7 @@ class CLI(cmd.Cmd):
         return stop
 
     def create_prompt(self):
+        # ToDo: figure out this bug (ntr 1/1 54.9%)
         (
             elapsed_seconds,
             elapsed_percentage,
