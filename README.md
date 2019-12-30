@@ -1,6 +1,15 @@
 # Session Noter
 
-Small suite of tools for session-based test management (SBTM)
+<p align="left">
+    <a href="https://circleci.com/gh/j19sch/session-noter/tree/master">
+        <img src="https://circleci.com/gh/j19sch/session-noter/tree/master.svg?style=svg" alt="CircleCI status"/></a>
+    <a href="https://github.com/psf/black">
+        <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Black code formatter"/></a>
+    <a href="https://github.com/j19sch/session-noter/blob/master/LICENSE">
+        <img src="https://img.shields.io/github/license/mashape/apistatus.svg" alt="MIT license"/></a>
+</p>
+
+Small suite of note-taking tools for session-based test management (SBTM)
 
 
 ## What to do with it
