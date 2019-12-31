@@ -8,7 +8,7 @@ import mss
 
 
 class Noter:
-    def __init__(self, filename: str, tester: str, charter: str, duration: int):
+    def __init__(self, filename: Optional[str], tester: str, charter: str, duration: int):
         self._notes: list = []
         self._filename = filename
 
