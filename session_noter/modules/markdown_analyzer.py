@@ -1,7 +1,7 @@
 from datetime import datetime
 from statistics import median, mean
 
-from session_noter.writers.markdown_writer import MarkDownWriter
+from writers.markdown_writer import MarkDownWriter
 
 
 def markdown_analyzer(session_overview, session_numbers, bugs, issues, questions):

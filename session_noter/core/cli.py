@@ -4,7 +4,7 @@ import math
 import sys
 from typing import Tuple, Optional
 
-from session_noter.core.noter import Noter
+from core.noter import Noter
 
 
 class CLI(cmd.Cmd):

@@ -1,4 +1,4 @@
-from session_noter.writers.markdown_writer import MarkDownWriter
+from writers.markdown_writer import MarkDownWriter
 
 
 def markdown_writer(

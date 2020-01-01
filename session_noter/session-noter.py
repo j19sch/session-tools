@@ -1,5 +1,5 @@
-from session_noter.core.cli import CLI
-from session_noter.core.utils import read_config_file
+from core.cli import CLI
+from core.utils import read_config_file
 
 
 if __name__ == "__main__":
