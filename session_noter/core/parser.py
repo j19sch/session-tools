@@ -1,8 +1,9 @@
 import csv
 from datetime import datetime
+from typing import Tuple, Optional, List, Dict, Union
 
 
-def session_parser(files: list):
+def session_parser(files: List[str]) -> Tuple[List[dict], List[dict], List[dict], List[dict], List[dict]]:
     session_overview = []
     session_numbers = []
     bugs = []
@@ -12,8 +13,8 @@ def session_parser(files: list):
     for file in files:
         pre_session, session, post_session = session_reader(file)
 
-        overview = {"session_notes": file}
-        numbers = {"session_notes": file}
+        overview: Dict[str, str] = {"session_notes": file}
+        numbers: Dict[str, Union[str, int]] = {"session_notes": file}
 
         for item in pre_session:
             if item[1] in ["tester", "charter"]:
@@ -21,8 +22,8 @@ def session_parser(files: list):
             elif item[1] == "duration":
                 numbers[item[1]] = item[2]
 
-        start_time = None
-        end_time = None
+        start_time: Optional[datetime] = None
+        end_time: Optional[datetime] = None
 
         for item in session:
             if item[1] == "session start":
@@ -36,9 +37,9 @@ def session_parser(files: list):
             elif item[1] == "question":
                 questions.append({"question": item[2], "session_notes": file})
 
-        try:
+        if start_time is not None and end_time is not None:
             numbers["actual_duration"] = round((end_time - start_time).seconds / 60)
-        except TypeError:
+        else:
             numbers["actual_duration"] = 0
 
         session_overview.append(overview)
@@ -49,7 +50,7 @@ def session_parser(files: list):
     return session_overview, session_numbers, bugs, issues, questions
 
 
-def session_reader(filename):
+def session_reader(filename: str) -> Tuple[list, list, list]:
     pre_session = []
     post_session = []
     session = []

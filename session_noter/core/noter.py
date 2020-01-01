@@ -2,9 +2,10 @@ import csv
 import datetime
 import os
 import pathlib
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Type, ContextManager
 
 import mss
+from mypy.ipc import TracebackType
 
 
 class Noter:
@@ -18,7 +19,7 @@ class Noter:
 
         self._session_start: Optional[datetime.datetime] = None
 
-    def __enter__(self):
+    def __enter__(self) -> 'Noter':
         if self._filename is not None:
             file_path = os.path.join(os.getcwd(), "notes")
             pathlib.Path(file_path).mkdir(exist_ok=True)
@@ -34,7 +35,7 @@ class Noter:
         self.add_note("duration", str(self._duration))
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_traceback):
+    def __exit__(self, exc_type: Optional[Type[BaseException]], exc_value: Optional[BaseException], traceback: Optional[TracebackType]) -> None:
         if self._filename is not None:
             self._file.close()
 
