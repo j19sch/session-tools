@@ -1,40 +1,50 @@
+from typing import Optional, Type, Iterator, Union
+
+from mypy.ipc import TracebackType
+
+
 class MarkDownWriter:
-    def __init__(self, filename: str, mode="w"):
+    def __init__(self, filename: str, mode: str = "w") -> None:
         self.filename = filename
         self.mode = mode
 
-    def __enter__(self):
+    def __enter__(self) -> "MarkDownWriter":
         self.markdown_file = open(self.filename, self.mode)
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_value: Optional[BaseException],
+        traceback: Optional[TracebackType],
+    ) -> None:
         self.markdown_file.close()
 
-    def header_1(self, header: str):
+    def header_1(self, header: str) -> None:
         """Add H1 header"""
         self.markdown_file.write(f"# {header}\n")
 
-    def header_2(self, header: str):
+    def header_2(self, header: str) -> None:
         """Add H2 header"""
         self.markdown_file.write(f"## {header}\n")
 
-    def header_3(self, header: str):
+    def header_3(self, header: str) -> None:
         """Add H3 header"""
         self.markdown_file.write(f"## {header}\n")
 
-    def add_line(self, text: str):
+    def add_line(self, text: str) -> None:
         """Add line of text"""
         self.markdown_file.write(f"{text}  \n")
 
-    def newline(self):
+    def newline(self) -> None:
         """Add new line character"""
         self.markdown_file.write("\n")
 
-    def separator(self):
+    def separator(self) -> None:
         """Add separator, aka horizontal rule"""
         self.markdown_file.write("---\n")
 
-    def table(self, columns: list, data: list):
+    def table(self, columns: list, data: list) -> None:
         """Add a table
 
         :param columns: list of tuples: (column name, width, alignment)
@@ -46,7 +56,7 @@ class MarkDownWriter:
             self._add_table_header_or_row(zip(row, [column[1] for column in columns]))
         self.newline()
 
-    def _add_table_header_or_row(self, row_items: iter):
+    def _add_table_header_or_row(self, row_items: Union[list, Iterator]) -> None:
         """Create a table header or a data row
 
         :param row_items: iterator of tuples: (data value, column width)
@@ -55,7 +65,7 @@ class MarkDownWriter:
         row = "| " + " | ".join(data_items) + " |\n"
         self.markdown_file.write(row)
 
-    def _add_table_header_separator(self, separator_items: iter):
+    def _add_table_header_separator(self, separator_items: list) -> None:
         """Create a table header separator row
 
         :param separator_items: iterator of tuples: (alignment, column width)"""
