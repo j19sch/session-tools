@@ -51,6 +51,8 @@ class CLI(cmd.Cmd):
     def _ask_for_session_info() -> Tuple[str, str, int]:
         tester = input("tester: ")
         charter = input("charter: ")
+        duration: int = 0
+
         while True:
             try:
                 duration = int(input("duration (minutes): "))
@@ -113,11 +115,11 @@ class CLI(cmd.Cmd):
                 )
             )
 
-    def do_capt(self, arg: None) -> None:
+    def do_capt(self, _arg: None) -> None:
         """take screenshot"""
         self._noter.take_screenshot()
 
-    def do_exit(self, arg: None) -> bool:
+    def do_exit(self, _arg: None) -> bool:
         """exit"""
         self._noter.end_session()
         return True
