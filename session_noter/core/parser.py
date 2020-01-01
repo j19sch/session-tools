@@ -3,7 +3,9 @@ from datetime import datetime
 from typing import Tuple, Optional, List, Dict, Union
 
 
-def session_parser(files: List[str]) -> Tuple[List[dict], List[dict], List[dict], List[dict], List[dict]]:
+def session_parser(
+    files: List[str],
+) -> Tuple[List[dict], List[dict], List[dict], List[dict], List[dict]]:
     session_overview = []
     session_numbers = []
     bugs = []
