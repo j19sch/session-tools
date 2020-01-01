@@ -4,7 +4,9 @@ from writers.markdown_writer import MarkDownWriter
 def markdown_writer(
     filename, pre_session_entries, session_entries, post_session_entries
 ):
-    with MarkDownWriter(f"{filename[:-4]}.md") as md_writer:
+    with MarkDownWriter(
+        f"{filename[:-4]}.md"
+    ) as md_writer:  # ToDo: use PathLib's PurePath.stem
         md_writer.header_1("Session notes")
 
         # tester, charter, duration

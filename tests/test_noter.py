@@ -3,23 +3,34 @@ import datetime
 from session_noter.core.noter import Noter
 
 
+# ToDo: https://docs.python.org/3/library/unittest.mock.html#mock-open
+from session_noter.writers.csv_writer import CSVWriter
+
+
 def test_add_session_info_notes_at_start():
     tester = "the tester"
     charter = "my charter"
     duration = 10
 
-    with Noter(None, tester, charter, duration) as noter:
-        assert noter.notes[0]["type"] == "tester"
-        assert noter.notes[0]["content"] == tester
-        assert type(noter.notes[0]["timestamp"]) == datetime.datetime
+    from unittest.mock import patch
 
-        assert noter.notes[1]["type"] == "charter"
-        assert noter.notes[1]["content"] == charter
-        assert type(noter.notes[1]["timestamp"]) == datetime.datetime
+    with patch(
+        "session_noter.writers.csv_writer.CSVWriter", autospec=True
+    ) as MockedCSVWriter:  # noqa: F841
+        writer = CSVWriter(".")
 
-        assert noter.notes[2]["type"] == "duration"
-        assert noter.notes[2]["content"] == str(duration)
-        assert type(noter.notes[2]["timestamp"]) == datetime.datetime
+        with Noter(writer, tester, charter, duration) as noter:
+            assert noter.notes[0]["type"] == "tester"
+            assert noter.notes[0]["content"] == tester
+            assert type(noter.notes[0]["timestamp"]) == datetime.datetime
+
+            assert noter.notes[1]["type"] == "charter"
+            assert noter.notes[1]["content"] == charter
+            assert type(noter.notes[1]["timestamp"]) == datetime.datetime
+
+            assert noter.notes[2]["type"] == "duration"
+            assert noter.notes[2]["content"] == str(duration)
+            assert type(noter.notes[2]["timestamp"]) == datetime.datetime
 
 
 def test_duration_property():

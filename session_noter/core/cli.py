@@ -1,10 +1,12 @@
 import cmd
 import datetime
 import math
+import pathlib
 import sys
-from typing import Tuple, Optional
+from typing import Tuple
 
 from core.noter import Noter
+from writers.csv_writer import CSVWriter
 
 
 class CLI(cmd.Cmd):
@@ -17,16 +19,12 @@ class CLI(cmd.Cmd):
 
         tester, charter, duration = self._ask_for_session_info()
 
-        filename: Optional[str]
-        if config["noter"]["output"] is not None:
-            filename = (
-                f"{datetime.datetime.now().strftime('%Y%m%dT%H%M%S')}-{tester}.csv"
-            )
-        else:
-            filename = None
+        file_path = pathlib.Path.cwd().joinpath("notes")
+        pathlib.Path(file_path).mkdir(exist_ok=True)
+        filename = f"{datetime.datetime.now().strftime('%Y%m%dT%H%M%S')}-{tester}.csv"
 
-        with Noter(filename, tester, charter, duration) as noter:
-            self._noter = noter
+        with CSVWriter(file_path.joinpath(filename)) as writer:
+            self._noter = Noter(writer, tester, charter, duration)
 
             ready_to_go = input("Press Enter to start your session.\n")
             if ready_to_go != "":

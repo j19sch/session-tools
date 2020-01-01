@@ -1,19 +1,16 @@
-import csv
 import datetime
 import os
 import pathlib
-from typing import Optional, Tuple, Type
+from typing import Optional, Tuple
 
 import mss
-from mypy.ipc import TracebackType
 
 
 class Noter:
-    def __init__(
-        self, filename: Optional[str], tester: str, charter: str, duration: int
-    ):
+    def __init__(self, writer, tester: str, charter: str, duration: int):
+        self._writer = writer
         self._notes: list = []
-        self._filename = filename
+        self._notes_dir = pathlib.Path(writer.path_to_file).parent.resolve()
 
         self._tester = tester
         self._charter = charter
@@ -21,30 +18,9 @@ class Noter:
 
         self._session_start: Optional[datetime.datetime] = None
 
-    def __enter__(self) -> "Noter":
-        if self._filename is not None:
-            file_path = os.path.join(os.getcwd(), "notes")
-            pathlib.Path(file_path).mkdir(exist_ok=True)
-            self._notes_dir = file_path
-            self._file = open(
-                os.path.join(self._notes_dir, self._filename), "w", newline=""
-            )
-            self._writer = csv.writer(
-                self._file, delimiter=";", quotechar="|", quoting=csv.QUOTE_MINIMAL
-            )
         self.add_note("tester", self._tester)
         self.add_note("charter", self._charter)
         self.add_note("duration", str(self._duration))
-        return self
-
-    def __exit__(
-        self,
-        exc_type: Optional[Type[BaseException]],
-        exc_value: Optional[BaseException],
-        traceback: Optional[TracebackType],
-    ) -> None:
-        if self._filename is not None:
-            self._file.close()
 
     @property
     def duration(self) -> Optional[int]:
@@ -96,11 +72,10 @@ class Noter:
         self._notes.append(
             {"timestamp": timestamp, "type": note_type, "content": content}
         )
-        if self._filename is not None:
-            self._writer.writerow(
-                [timestamp.strftime("%Y-%m-%dT%H:%M:%S"), note_type, content]
-            )
-            self._file.flush()  # flush immediately so notes are captured even on crash
+        self._writer.writer.writerow(
+            [timestamp.strftime("%Y-%m-%dT%H:%M:%S"), note_type, content]
+        )
+        self._writer.flush_file()  # flush immediately so notes are captured even on crash
 
     def all_notes_of_type(self, note_type: str) -> list:
         return [note for note in self._notes if note["type"] == note_type]
