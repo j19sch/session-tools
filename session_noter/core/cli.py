@@ -80,7 +80,7 @@ class CLI(cmd.Cmd):
         if elapsed_seconds is not None:
             elapsed_minutes: int = math.floor(elapsed_seconds / 60)
             if elapsed_percentage is not None:
-                prompt = f"(ntr {elapsed_minutes:.0f}/{self._noter.duration:d} {elapsed_percentage:.1%})"
+                prompt = f"(ntr {elapsed_minutes:.0f}/{self._noter.duration:d} {elapsed_percentage:.1%}) "
             else:
                 prompt = f"(ntr {elapsed_minutes:.0f}) "
         else:
