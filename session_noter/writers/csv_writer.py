@@ -17,5 +17,12 @@ class CSVWriter:
     def __exit__(self, exc_type, exc_value, traceback):
         self.csv_file.close()
 
-    def flush_file(self):
-        self.csv_file.flush()
+    def add_entry(self, entry):
+        self.writer.writerow(
+            [
+                entry["timestamp"].strftime("%Y-%m-%dT%H:%M:%S"),
+                entry["type"],
+                entry["content"],
+            ]
+        )
+        self.csv_file.flush()  # flush immediately so notes are captured even on crash

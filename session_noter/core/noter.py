@@ -7,6 +7,7 @@ import mss
 
 
 class Noter:
+    # ToDo: should the Noter take a filename, a filehandler or a writer?
     def __init__(self, writer, tester: str, charter: str, duration: int):
         self._writer = writer
         self._notes: list = []
@@ -69,13 +70,10 @@ class Noter:
         self, note_type: str, content: str, timestamp: datetime.datetime = None
     ) -> None:
         timestamp = datetime.datetime.now() if timestamp is None else timestamp
-        self._notes.append(
-            {"timestamp": timestamp, "type": note_type, "content": content}
-        )
-        self._writer.writer.writerow(
-            [timestamp.strftime("%Y-%m-%dT%H:%M:%S"), note_type, content]
-        )
-        self._writer.flush_file()  # flush immediately so notes are captured even on crash
+        note = {"timestamp": timestamp, "type": note_type, "content": content}
+
+        self._notes.append(note)
+        self._writer.add_entry(note)
 
     def all_notes_of_type(self, note_type: str) -> list:
         return [note for note in self._notes if note["type"] == note_type]
