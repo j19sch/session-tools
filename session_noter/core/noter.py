@@ -5,10 +5,12 @@ from typing import Optional, Tuple
 
 import mss
 
+from writers.csv_writer import CSVWriter
+
 
 class Noter:
     # ToDo: should the Noter take a filename, a filehandler or a writer?
-    def __init__(self, writer, tester: str, charter: str, duration: int):
+    def __init__(self, writer: CSVWriter, tester: str, charter: str, duration: int):
         self._writer = writer
         self._notes: list = []
         self._notes_dir = pathlib.Path(writer.path_to_file).parent.resolve()
