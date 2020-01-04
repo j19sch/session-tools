@@ -1,6 +1,5 @@
 import datetime
 from unittest import mock
-import pytest
 
 from session_noter.core.noter import Noter
 from session_noter.writers.csv_writer import CSVWriter
@@ -43,60 +42,66 @@ def test_add_session_info_notes_at_start():
     assert writer.add_entry.call_args_list[2][0][0]["content"] == str(duration)
 
 
-@pytest.mark.skip(reason="needs mock for CSVWriter instance")
 def test_duration_property():
-    noter = Noter(None, "tester", "charter", 10)
+    writer = mock.Mock(spec=CSVWriter(""), path_to_file="uhugh")
+
+    noter = Noter(writer, "tester", "charter", 10)
     assert noter.duration == 10
 
 
-@pytest.mark.skip(reason="needs mock for CSVWriter instance")
 def test_notes_property():
     tester = "the tester"
     charter = "my charter"
     duration = 10
 
-    with Noter(None, tester, charter, duration) as noter:
-        assert len(noter.notes) == 3
-        noter.add_note("note", "some note")
-        assert len(noter.notes) == 4
+    writer = mock.Mock(spec=CSVWriter(""), path_to_file="uhugh")
+
+    noter = Noter(writer, tester, charter, duration)
+    assert len(noter.notes) == 3
+    noter.add_note("note", "some note")
+    assert len(noter.notes) == 4
 
 
-@pytest.mark.skip(reason="needs mock for CSVWriter instance")
 def test_session_notes_property():
-    with Noter(None, "tester", "charter", 10) as noter:
-        assert len(noter.session_notes) == 0
-        noter.add_note("note", "some note")
-        assert len(noter.session_notes) == 1
+    writer = mock.Mock(spec=CSVWriter(""), path_to_file="uhugh")
+
+    noter = Noter(writer, "tester", "charter", 10)
+    assert len(noter.session_notes) == 0
+    noter.add_note("note", "some note")
+    assert len(noter.session_notes) == 1
 
 
-@pytest.mark.skip(reason="needs mock for CSVWriter instance")
 def test_start_session():
-    noter = Noter(None, "tester", "charter", 10)
+    writer = mock.Mock(spec=CSVWriter(""), path_to_file="uhugh")
+
+    noter = Noter(writer, "tester", "charter", 10)
     noter.start_session()
 
-    assert len(noter.notes) == 1
-    assert noter.notes[0]["type"] == "session start"
-    assert noter.notes[0]["content"] == ""
-    assert type(noter.notes[0]["timestamp"]) == datetime.datetime
+    assert len(noter.notes) == 4
+    assert noter.notes[3]["type"] == "session start"
+    assert noter.notes[3]["content"] == ""
+    assert type(noter.notes[3]["timestamp"]) == datetime.datetime
 
 
-@pytest.mark.skip(reason="needs mock for CSVWriter instance")
 def test_end_session():
-    noter = Noter(None, "tester", "charter", 10)
+    writer = mock.Mock(spec=CSVWriter(""), path_to_file="uhugh")
+
+    noter = Noter(writer, "tester", "charter", 10)
     noter.end_session()
 
-    assert len(noter.notes) == 1
-    assert noter.notes[0]["type"] == "session end"
-    assert noter.notes[0]["content"] == ""
-    assert type(noter.notes[0]["timestamp"]) == datetime.datetime
+    assert len(noter.notes) == 4
+    assert noter.notes[3]["type"] == "session end"
+    assert noter.notes[3]["content"] == ""
+    assert type(noter.notes[3]["timestamp"]) == datetime.datetime
 
 
-@pytest.mark.skip(reason="needs mock for CSVWriter instance")
 def test_add_note():
-    noter = Noter(None, "tester", "charter", 10)
+    writer = mock.Mock(spec=CSVWriter(""), path_to_file="uhugh")
+
+    noter = Noter(writer, "tester", "charter", 10)
     noter.add_note("note", "test content")
 
-    assert len(noter.notes) == 1
-    assert noter.notes[0]["type"] == "note"
-    assert noter.notes[0]["content"] == "test content"
-    assert type(noter.notes[0]["timestamp"]) == datetime.datetime
+    assert len(noter.notes) == 4
+    assert noter.notes[3]["type"] == "note"
+    assert noter.notes[3]["content"] == "test content"
+    assert type(noter.notes[3]["timestamp"]) == datetime.datetime
