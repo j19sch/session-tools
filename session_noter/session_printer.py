@@ -1,10 +1,10 @@
 import argparse
 
-from core.parser import session_reader
-from modules.markdown_printer import markdown_writer
+from session_noter.core.parser import session_reader
+from session_noter.modules.markdown_printer import markdown_writer
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("file", help="the file you want to convert to markdown")
     args = parser.parse_args()

@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 
 import mss
 
-from writers.csv_writer import CSVWriter
+from session_noter.writers.csv_writer import CSVWriter
 
 
 class Noter:
