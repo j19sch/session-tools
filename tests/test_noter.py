@@ -105,3 +105,60 @@ def test_add_note():
     assert noter.notes[3]["type"] == "note"
     assert noter.notes[3]["content"] == "test content"
     assert type(noter.notes[3]["timestamp"]) == datetime.datetime
+
+
+def test_elapsed_seconds_session_start_not_set():
+    writer = mock.Mock(spec=CSVWriter(""), path_to_file="uhugh")
+    noter = Noter(writer, "tester", "charter", 10)
+
+    assert noter.elapsed_seconds_and_percentage() == (None, None)
+
+
+def test_elapsed_seconds_session_start_and_duration_set():
+    writer = mock.Mock(spec=CSVWriter(""), path_to_file="uhugh")
+    duration = 10
+    noter = Noter(writer, "tester", "charter", duration)
+
+    noter._session_start = datetime.datetime(2020, 1, 1, 10, 0, 0, 000000)
+    with mock.patch("session_noter.core.noter.datetime") as mock_date:
+        mocked_current_time = datetime.datetime(2020, 1, 1, 10, 2, 0, 000000)
+        mock_date.datetime.now.return_value = mocked_current_time
+        mock_date.side_effect = lambda *args, **kw: datetime.datetime(*args, **kw)
+
+        expected_elapsed_seconds = (
+            mocked_current_time - noter._session_start
+        ).total_seconds()
+
+        assert noter.elapsed_seconds_and_percentage() == (
+            expected_elapsed_seconds,
+            expected_elapsed_seconds / (duration * 60),
+        )
+
+
+def test_take_screenshot():
+    writer = mock.Mock(spec=CSVWriter(""), path_to_file="uhugh")
+    noter = Noter(writer, "tester", "charter", 10)
+
+    with mock.patch("session_noter.core.noter.mss.mss") as mock_mss, mock.patch(
+        "session_noter.core.noter.datetime"
+    ) as mock_date:
+        mocked_current_time = datetime.datetime(2020, 1, 1, 10, 2, 0, 000000)
+        mock_date.datetime.now.return_value = mocked_current_time
+        mock_date.side_effect = lambda *args, **kw: datetime.datetime(*args, **kw)
+
+        mock_sct = mock.Mock()
+        mock_mss.return_value.__enter__.return_value = mock_sct
+
+        noter.take_screenshot()
+
+        assert mock_sct.shot.call_count == 1
+        assert mock_sct.shot.call_args[1] == {
+            "output": "/home/jss/workspace/session-noter/20200101T100200.png"
+        }
+
+    assert len(noter.notes) == 4
+    assert noter.notes[3]["type"] == "capture"
+    assert noter.notes[3]["content"] == mocked_current_time.strftime(
+        "%Y%m%dT%H%M%S.png"
+    )
+    assert type(noter.notes[3]["timestamp"]) == datetime.datetime
