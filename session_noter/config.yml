@@ -5,14 +5,19 @@ noter:
 note_types:
   - type: question
     command: q
+    report: true
   - type: bug
     command: b
+    report: true
   - type: issue
     command: i
+    report: true
   - type: setup
     command: s
+    report: false
   - type: note
     command: n
+    report: false
 
 post_session:
   task_breakdown:

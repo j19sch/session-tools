@@ -1,6 +1,7 @@
 import argparse
 
-from session_noter.core.parser import session_reader
+from session_noter.core.utils import read_config_file
+from session_noter.core.read_csv_file import read_and_parse_csv_notes_file
 from session_noter.modules.markdown_printer import markdown_writer
 
 
@@ -9,10 +10,10 @@ def main():
     parser.add_argument("file", help="the file you want to convert to markdown")
     args = parser.parse_args()
 
-    pre_session_entries, session_entries, post_session_entries = session_reader(
-        args.file
+    config = read_config_file()
+
+    metadata, session, to_report, task_breakdown = read_and_parse_csv_notes_file(
+        args.file, config
     )
 
-    markdown_writer(
-        args.file, pre_session_entries, session_entries, post_session_entries
-    )
+    markdown_writer(args.file, metadata, session, to_report, task_breakdown)
