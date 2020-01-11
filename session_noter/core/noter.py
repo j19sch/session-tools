@@ -1,5 +1,4 @@
 import datetime
-import os
 import pathlib
 from typing import Optional, Tuple
 
@@ -84,11 +83,21 @@ class Noter:
         return self._notes[-number:]
 
     def take_screenshot(self) -> None:
-        # ToDo: two screenshots during the same second results in the 2nd file overwriting the 1st
         timestamp = datetime.datetime.now()
-        filename = timestamp.strftime("%Y%m%dT%H%M%S.png")
-        screenshot_file = os.path.join(self._notes_dir, filename)
+        base_filename = timestamp.strftime("%Y%m%dT%H%M%S")
+
+        filename = f"{base_filename}.png"
+        screenshot_file = self._notes_dir.joinpath(filename)
+
+        if pathlib.Path(screenshot_file).is_file():
+            suffix = 1
+            while self._notes_dir.joinpath(f"{base_filename}-{suffix}.png").is_file():
+                suffix += 1
+            filename = f"{base_filename}-{suffix}.png"
+            screenshot_file = self._notes_dir.joinpath(filename)
+
         with mss.mss() as sct:
-            sct.shot(output=screenshot_file)
+            sct.shot(output=str(screenshot_file))
 
         self.add_note("capture", filename, timestamp=timestamp)
+        print(f"captured {filename}")
