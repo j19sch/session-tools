@@ -153,7 +153,7 @@ def test_take_screenshot():
 
         assert mock_sct.shot.call_count == 1
         assert mock_sct.shot.call_args[1] == {
-            "output": "/home/jss/workspace/session-noter/20200101T100200.png"
+            "output": f"{noter._notes_dir}/20200101T100200.png"
         }
 
     assert len(noter.notes) == 4
