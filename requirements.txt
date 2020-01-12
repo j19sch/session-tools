@@ -1,7 +1,7 @@
 mss
 pyyaml
+mypy
 
 black
 flake8
-mypy
 pytest

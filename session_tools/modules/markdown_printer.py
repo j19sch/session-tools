@@ -41,7 +41,7 @@ def markdown_writer(session_data):
 
         # note type to report
         for note_type in session_data["to_report"]:
-            md_writer.header_2(note_type)
+            md_writer.header_2(f"{note_type}")
             notes = [note for note in session_data["session"] if note[1] == note_type]
             if len(notes) > 0:
                 columns = [

@@ -12,7 +12,12 @@ def read(fname):
 setup(
     name="session-noter",
     version="v0.2.0",
-    packages=["session_tools"],
+    packages=[
+        "session_tools",
+        "session_tools.core",
+        "session_tools.modules",
+        "session_tools.writers",
+    ],
     entry_points={
         "console_scripts": [
             "session-noter = session_tools.session_noter:main",
@@ -27,8 +32,8 @@ setup(
     description="note-taking tools for session-based test management",
     long_description=read("README.md"),
     python_requires=">=3.6",
-    install_requires=["pyyaml", "mss"],
-    tests_require=["pytest", "flake8", "black", "mypy"],
+    install_requires=["pyyaml", "mss", "mypy"],
+    tests_require=["pytest", "flake8", "black"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
