@@ -12,8 +12,7 @@ def main():
 
     config = read_config_file()
 
-    metadata, session, to_report, task_breakdown = read_and_parse_csv_notes_file(
-        args.file, config
-    )
+    session_data = read_and_parse_csv_notes_file(args.file, config)
 
-    markdown_writer(args.file, metadata, session, to_report, task_breakdown)
+    markdown_writer(session_data)
+    print("Done!")

@@ -48,7 +48,7 @@ class MarkDownWriter:
         """Add a table
 
         :param columns: list of tuples: (column name, width, alignment)
-        :param data: list of tuples: (values for one row)
+        :param data: list of tuples or lists: (values for one row)
         """
         self._add_table_header_or_row([(column[0], column[1]) for column in columns])
         self._add_table_header_separator([(column[2], column[1]) for column in columns])

@@ -1,8 +1,8 @@
 import argparse
 
+from session_noter.core.utils import read_config_file
 from session_noter.modules.markdown_analyzer import markdown_analyzer
-from session_noter.core.parser import session_parser
-from session_noter.core.read_csv_file import read_csv_notes_file
+from session_noter.core.read_csv_file import read_and_parse_csv_notes_file
 
 
 def main():
@@ -14,8 +14,10 @@ def main():
     )
     args = parser.parse_args()
 
-    session_overview, session_numbers, bugs, issues, questions = session_parser(
-        args.files, read_csv_notes_file
-    )
+    config = read_config_file()
 
-    markdown_analyzer(session_overview, session_numbers, bugs, issues, questions)
+    sessions = [read_and_parse_csv_notes_file(file, config) for file in args.files]
+
+    markdown_analyzer(sessions)
+
+    print("Done!")

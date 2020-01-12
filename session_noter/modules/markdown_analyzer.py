@@ -4,7 +4,27 @@ from statistics import median, mean
 from session_noter.writers.markdown_writer import MarkDownWriter
 
 
-def markdown_analyzer(session_overview, session_numbers, bugs, issues, questions):
+def markdown_analyzer(sessions):
+    report_types = set()
+    for note_types in [session["to_report"] for session in sessions]:
+        for note_type in note_types:
+            report_types.add(note_type)
+    report_types = list(sorted(report_types))
+
+    report_notes = {}
+    for report_type in report_types:
+        report_notes[report_type] = list()
+    for session in sessions:
+        for note in session["session"]:
+            if note[1] in report_types:
+                report_notes[note[1]].append((session["filename"], note[2]))
+
+    task_breakdown_types = set()
+    for task_types in [session["task_breakdown"] for session in sessions]:
+        for task_type in task_types:
+            task_breakdown_types.add(task_type)
+    task_breakdown_types = list(sorted(task_breakdown_types))
+
     with MarkDownWriter(
         f"analysis-{datetime.now().strftime('%Y%m%dT%H%M%S')}.md"
     ) as md_writer:
@@ -23,21 +43,27 @@ def markdown_analyzer(session_overview, session_numbers, bugs, issues, questions
             ("sessions", col_width_narrow, "C"),
             ("planned (min)", col_width_narrow, "C"),
             ("spent (min)", col_width_narrow, "C"),
-            ("bugs", col_width_narrow, "C"),
-            ("issues", col_width_narrow, "C"),
-            ("questions", col_width_narrow, "C"),
         ]
+        for category in report_types:
+            overview_1_columns.append((category, col_width_narrow, "C"))
+
         overview_1_data = [
-            (
+            [
                 "totals",
-                len(session_overview),
-                sum([int(_["duration"]) for _ in session_numbers]),
-                sum([int(_["actual_duration"]) for _ in session_numbers]),
-                len(bugs),
-                len(issues),
-                len(questions),
-            )
+                len(sessions),
+                sum([int(session["metadata"]["duration"]) for session in sessions]),
+                sum(
+                    [
+                        int(session["metadata"]["actual_duration"])
+                        for session in sessions
+                    ]
+                ),
+            ]
         ]
+
+        for notes in report_notes.values():
+            overview_1_data[0].append(len(notes))
+
         md_writer.table(overview_1_columns, overview_1_data)
 
         # Overview - charters
@@ -47,8 +73,12 @@ def markdown_analyzer(session_overview, session_numbers, bugs, issues, questions
             ("Charter", col_width_wide, "L"),
         ]
         overview_2_data = [
-            (session["session_notes"], session["tester"], session["charter"])
-            for session in session_overview
+            (
+                session["filename"],
+                session["metadata"]["tester"],
+                session["metadata"]["charter"],
+            )
+            for session in sessions
         ]
         md_writer.table(overview_2_columns, overview_2_data)
 
@@ -59,21 +89,23 @@ def markdown_analyzer(session_overview, session_numbers, bugs, issues, questions
             ("File", col_width_default, "L"),
             ("planned (min)", col_width_narrow, "C"),
             ("spent (min)", col_width_narrow, "C"),
-            ("setup (%)", col_width_narrow, "C"),
-            ("testing (%)", col_width_narrow, "C"),
-            ("investigating (%)", col_width_narrow, "C"),
         ]
-        numbers_data = [
-            (
-                session["session_notes"],
-                session["duration"],
-                session["actual_duration"],
-                session["setup"],
-                session["testing"],
-                session["investigating"],
-            )
-            for session in session_numbers
-        ]
+        for category in task_breakdown_types:
+            numbers_columns.append((f"{category} (%)", col_width_narrow, "C"))
+
+        numbers_data = []
+
+        for session in sessions:
+            session_data = [
+                session["filename"],
+                session["metadata"]["duration"],
+                session["metadata"]["actual_duration"],
+            ]
+
+            for category in task_breakdown_types:
+                session_data.append(session["task_breakdown"][category])
+
+            numbers_data.append(session_data)
 
         separator = (
             " -   -   -",
@@ -86,62 +118,57 @@ def markdown_analyzer(session_overview, session_numbers, bugs, issues, questions
         # ToDo: construct separator based on len(number_of_columns)
         numbers_data.append(separator)
 
-        means = (
+        means = [
             "mean",
-            round(mean([int(_["duration"]) for _ in session_numbers])),
-            round(mean([int(_["actual_duration"]) for _ in session_numbers])),
-            round(mean([int(_["setup"]) for _ in session_numbers])),
-            round(mean([int(_["testing"]) for _ in session_numbers])),
-            round(mean([int(_["investigating"]) for _ in session_numbers])),
-        )
+            round(mean([int(session["metadata"]["duration"]) for session in sessions])),
+            round(
+                mean(
+                    [
+                        int(session["metadata"]["actual_duration"])
+                        for session in sessions
+                    ]
+                )
+            ),
+        ]
+        for category in task_breakdown_types:
+            result = round(
+                mean([int(session["task_breakdown"][category]) for session in sessions])
+            )
+            means.append(result)
         numbers_data.append(means)
 
-        medians = (
+        medians = [
             "median",
-            round(median([int(_["duration"]) for _ in session_numbers])),
-            round(median([int(_["actual_duration"]) for _ in session_numbers])),
-            round(median([int(_["setup"]) for _ in session_numbers])),
-            round(median([int(_["testing"]) for _ in session_numbers])),
-            round(median([int(_["investigating"]) for _ in session_numbers])),
-        )
+            round(
+                median([int(session["metadata"]["duration"]) for session in sessions])
+            ),
+            round(
+                median(
+                    [
+                        int(session["metadata"]["actual_duration"])
+                        for session in sessions
+                    ]
+                )
+            ),
+        ]
+        for category in task_breakdown_types:
+            result = round(
+                median(
+                    [int(session["task_breakdown"][category]) for session in sessions]
+                )
+            )
+            medians.append(result)
         numbers_data.append(medians)
+
         md_writer.table(numbers_columns, numbers_data)
 
-        # List of bugs
-        md_writer.header_2("Bugs")
-        if len(bugs) > 0:
-            bugs_columns = [
-                ("File", col_width_default, "L"),
-                ("Bug", col_width_wide, "L"),
-            ]
-            bugs_data = [(bug["session_notes"], bug["bug"]) for bug in bugs]
-            md_writer.table(bugs_columns, bugs_data)
-        else:
-            md_writer.add_line("No bugs.")
-
-        # List of issues
-        md_writer.header_2("Issues")
-        if len(issues) > 0:
-            issues_columns = [
-                ("File", col_width_default, "L"),
-                ("Issue", col_width_wide, "L"),
-            ]
-            issues_data = [(issue["session_notes"], issue["issue"]) for issue in issues]
-            md_writer.table(issues_columns, issues_data)
-        else:
-            md_writer.add_line("No issues.")
-
-        # List of questions
-        md_writer.header_2("Questions")
-        if len(questions) > 0:
-            questions_columns = [
-                ("File", col_width_default, "L"),
-                ("Question", col_width_wide, "L"),
-            ]
-            questions_data = [
-                (question["session_notes"], question["question"])
-                for question in questions
-            ]
-            md_writer.table(questions_columns, questions_data)
-        else:
-            md_writer.add_line("No questions.")
+        for note_type, notes in report_notes.items():
+            md_writer.header_2(f"{note_type.capitalize()}s")
+            if len(notes) > 0:
+                columns = [
+                    ("File", col_width_default, "L"),
+                    (note_type, col_width_wide, "L"),
+                ]
+                md_writer.table(columns, notes)
+            else:
+                md_writer.add_line(f"No {note_type}s.")

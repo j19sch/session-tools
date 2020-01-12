@@ -3,14 +3,19 @@ from datetime import datetime
 from typing import Tuple
 
 
-def read_and_parse_csv_notes_file(
-    filename: str, config: dict
-) -> Tuple[dict, list, dict, dict]:
+def read_and_parse_csv_notes_file(filename: str, config: dict) -> dict:
     pre_session, session_times, session, post_session = read_csv_notes_file(filename)
     metadata, session, to_report, task_breakdown = parse_csv_notes_sections(
         config, pre_session, session_times, session, post_session
     )
-    return metadata, session, to_report, task_breakdown
+    session_data = {
+        "filename": filename,
+        "metadata": metadata,
+        "session": session,
+        "to_report": to_report,
+        "task_breakdown": task_breakdown,
+    }
+    return session_data
 
 
 def read_csv_notes_file(filename: str) -> Tuple[list, tuple, list, list]:
@@ -51,7 +56,7 @@ def parse_csv_notes_sections(
     session_times: tuple,
     session: list,
     post_session: list,
-) -> Tuple[dict, list, dict, dict]:
+) -> Tuple[dict, list, list, dict]:
     metadata = {item[1]: item[2] for item in pre_session}
 
     metadata["start"] = session_times[0]
@@ -63,14 +68,9 @@ def parse_csv_notes_sections(
     else:
         metadata["actual_duration"] = 0
 
-    reportables = [
-        item["type"] for item in config["note_types"] if item["report"] is True
-    ]
-    to_report: dict = {item: [] for item in reportables}
-
-    for item in session:
-        if item[1] in reportables:
-            to_report[item[1]].append(item)
+    to_report = sorted(
+        [item["type"] for item in config["note_types"] if item["report"] is True]
+    )
 
     task_breakdown = {
         item[1]: item[2]
