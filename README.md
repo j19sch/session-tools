@@ -1,11 +1,11 @@
 # Session Noter
 
 <p align="left">
-    <a href="https://circleci.com/gh/j19sch/session-noter/tree/master">
-        <img src="https://circleci.com/gh/j19sch/session-noter/tree/master.svg?style=svg" alt="CircleCI status"/></a>
+    <a href="https://circleci.com/gh/j19sch/session-tools/tree/master">
+        <img src="https://circleci.com/gh/j19sch/session-tools/tree/master.svg?style=svg" alt="CircleCI status"/></a>
     <a href="https://github.com/psf/black">
         <img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Black code formatter"/></a>
-    <a href="https://github.com/j19sch/session-noter/blob/master/LICENSE">
+    <a href="https://github.com/j19sch/session-tools/blob/master/LICENSE">
         <img src="https://img.shields.io/github/license/mashape/apistatus.svg" alt="MIT license"/></a>
 </p>
 
@@ -21,7 +21,7 @@ Small suite of note-taking tools for session-based test management (SBTM)
 - install dependencies with `pip install -r requirements.txt`
 
 ### Usage
-In the `./session_noter` directory:
+In the `./session_tools` directory:
 - `python session-noter.py` - record session notes
     - prompt `(ntr 0/45 0.0%)`: 0 of 45 minutes elapsed, i.e. 0.0%
 - `python session-printer.py <file>` - convert session notes files to markdown
