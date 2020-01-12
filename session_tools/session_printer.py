@@ -1,8 +1,8 @@
 import argparse
 
-from session_noter.core.utils import read_config_file
-from session_noter.core.read_csv_file import read_and_parse_csv_notes_file
-from session_noter.modules.markdown_printer import markdown_writer
+from session_tools.core.utils import read_config_file
+from session_tools.core.read_csv_file import read_and_parse_csv_notes_file
+from session_tools.modules.markdown_printer import markdown_writer
 
 
 def main():

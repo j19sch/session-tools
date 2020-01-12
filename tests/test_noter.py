@@ -1,8 +1,8 @@
 import datetime
 from unittest import mock
 
-from session_noter.core.noter import Noter
-from session_noter.writers.csv_writer import CSVWriter
+from session_tools.core.noter import Noter
+from session_tools.writers.csv_writer import CSVWriter
 
 
 def test_add_session_info_notes_at_start():
@@ -120,7 +120,7 @@ def test_elapsed_seconds_session_start_and_duration_set():
     noter = Noter(writer, "tester", "charter", duration)
 
     noter._session_start = datetime.datetime(2020, 1, 1, 10, 0, 0, 000000)
-    with mock.patch("session_noter.core.noter.datetime") as mock_date:
+    with mock.patch("session_tools.core.noter.datetime") as mock_date:
         mocked_current_time = datetime.datetime(2020, 1, 1, 10, 2, 0, 000000)
         mock_date.datetime.now.return_value = mocked_current_time
         mock_date.side_effect = lambda *args, **kw: datetime.datetime(*args, **kw)
@@ -139,8 +139,8 @@ def test_take_screenshot():
     writer = mock.Mock(spec=CSVWriter(""), path_to_file="uhugh")
     noter = Noter(writer, "tester", "charter", 10)
 
-    with mock.patch("session_noter.core.noter.mss.mss") as mock_mss, mock.patch(
-        "session_noter.core.noter.datetime"
+    with mock.patch("session_tools.core.noter.mss.mss") as mock_mss, mock.patch(
+        "session_tools.core.noter.datetime"
     ) as mock_date:
         mocked_current_time = datetime.datetime(2020, 1, 1, 10, 2, 0, 000000)
         mock_date.datetime.now.return_value = mocked_current_time

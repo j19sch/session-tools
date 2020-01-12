@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 
 import mss
 
-from session_noter.writers.csv_writer import CSVWriter
+from session_tools.writers.csv_writer import CSVWriter
 
 
 class Noter:

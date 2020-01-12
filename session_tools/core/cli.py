@@ -5,8 +5,8 @@ import pathlib
 import sys
 from typing import Tuple
 
-from session_noter.core.noter import Noter
-from session_noter.writers.csv_writer import CSVWriter
+from session_tools.core.noter import Noter
+from session_tools.writers.csv_writer import CSVWriter
 
 
 class CLI(cmd.Cmd):

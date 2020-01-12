@@ -12,15 +12,15 @@ def read(fname):
 setup(
     name="session-noter",
     version="v0.2.0",
-    packages=["session_noter"],
+    packages=["session_tools"],
     entry_points={
         "console_scripts": [
-            "session-notetaker = session_noter.session_notetaker:main",
-            "session-printer = session_noter.session_printer:main",
-            "session-analyzer = session_noter.session_analyzer:main",
+            "session-noter = session_tools.session_noter:main",
+            "session-printer = session_tools.session_printer:main",
+            "session-analyzer = session_tools.session_analyzer:main",
         ]
     },
-    url="https://github.com/j19sch/session-noter",
+    url="https://github.com/j19sch/session-tools",
     license="MIT",
     author="Joep Schuurkes",
     author_email="j19sch@gmail.com",
