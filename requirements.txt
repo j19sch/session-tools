@@ -1,6 +1,7 @@
 mss
 pyyaml
 
-flake8
 black
+flake8
+mypy
 pytest

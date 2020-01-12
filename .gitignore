@@ -1,6 +1,10 @@
 # python
 *.pyc
 __pycache__/
+*.egg-info/
+
+# mypy cache
+.mypy_cache/
 
 # pytest
 .pytest_cache/

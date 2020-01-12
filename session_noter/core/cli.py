@@ -1,13 +1,16 @@
 import cmd
 import datetime
 import math
+import pathlib
 import sys
+from typing import Tuple
 
-from core.noter import Noter
+from session_noter.core.noter import Noter
+from session_noter.writers.csv_writer import CSVWriter
 
 
 class CLI(cmd.Cmd):
-    def __init__(self, config):
+    def __init__(self, config: dict):
         print("Welcome to session-noter!\n")
 
         for _ in config["note_types"]:
@@ -16,15 +19,12 @@ class CLI(cmd.Cmd):
 
         tester, charter, duration = self._ask_for_session_info()
 
-        if config["noter"]["output"] is not None:
-            filename = (
-                f"{datetime.datetime.now().strftime('%Y%m%dT%H%M%S')}-{tester}.csv"
-            )
-        else:
-            filename = None
+        file_path = pathlib.Path.cwd().joinpath("notes")
+        pathlib.Path(file_path).mkdir(exist_ok=True)
+        filename = f"{datetime.datetime.now().strftime('%Y%m%dT%H%M%S')}-{tester}.csv"
 
-        with Noter(filename, tester, charter, duration) as noter:
-            self._noter = noter
+        with CSVWriter(file_path.joinpath(filename)) as writer:
+            self._noter = Noter(writer, tester, charter, duration)
 
             ready_to_go = input("Press Enter to start your session.\n")
             if ready_to_go != "":
@@ -37,8 +37,8 @@ class CLI(cmd.Cmd):
             self._post_session(config["post_session"])
 
     @classmethod
-    def _add_note_types_to_interface(cls, note_type, abbreviation):
-        def inner_add_note_type(self, arg):
+    def _add_note_types_to_interface(cls, note_type: str, abbreviation: str) -> None:
+        def inner_add_note_type(self: CLI, arg: str) -> None:
             self._noter.add_note(note_type, arg)
 
         inner_add_note_type.__doc__ = f"add a note of type {note_type}"
@@ -46,9 +46,11 @@ class CLI(cmd.Cmd):
         setattr(cls, inner_add_note_type.__name__, inner_add_note_type)
 
     @staticmethod
-    def _ask_for_session_info():
+    def _ask_for_session_info() -> Tuple[str, str, int]:
         tester = input("tester: ")
         charter = input("charter: ")
+        duration: int = 0
+
         while True:
             try:
                 duration = int(input("duration (minutes): "))
@@ -63,34 +65,36 @@ class CLI(cmd.Cmd):
                 break
         return tester, charter, duration
 
-    def postcmd(self, stop, line):
+    def postcmd(self, stop, line):  # type: ignore
         self.prompt = self.create_prompt()
         return stop
 
-    def create_prompt(self):
+    def create_prompt(self) -> str:
         (
             elapsed_seconds,
             elapsed_percentage,
         ) = self._noter.elapsed_seconds_and_percentage()
 
-        elapsed_minutes = math.floor(elapsed_seconds / 60)
-
-        if elapsed_percentage:
-            return "(ntr {:.0f}/{:d} {:.1%}) ".format(
-                elapsed_minutes, self._noter.duration, elapsed_percentage
-            )
+        if elapsed_seconds is not None:
+            elapsed_minutes: int = math.floor(elapsed_seconds / 60)
+            if elapsed_percentage is not None:
+                prompt = f"(ntr {elapsed_minutes:.0f}/{self._noter.duration:d} {elapsed_percentage:.1%}) "
+            else:
+                prompt = f"(ntr {elapsed_minutes:.0f}) "
         else:
-            return "(ntr {:.0f}) ".format(elapsed_minutes)
+            prompt = "(ntr) "
 
-    def emptyline(self):
+        return prompt
+
+    def emptyline(self) -> None:  # type: ignore
         pass  # otherwise last nonempty command entered is repeated
 
-    def _post_session(self, config):
+    def _post_session(self, config: dict) -> None:
         for item in config["task_breakdown"]:
             post_session_entry = input(f"{item}: ")
             self._noter.add_note(item, post_session_entry)
 
-    def do_list(self, arg):
+    def do_list(self, arg: str) -> None:
         """list all notes so far, latest n notes, or all notes of a specific type"""
         if arg != "":
             try:
@@ -109,11 +113,11 @@ class CLI(cmd.Cmd):
                 )
             )
 
-    def do_capt(self, arg):
+    def do_capt(self, _arg: None) -> None:
         """take screenshot"""
         self._noter.take_screenshot()
 
-    def do_exit(self, arg):
+    def do_exit(self, _arg: None) -> bool:
         """exit"""
         self._noter.end_session()
         return True
