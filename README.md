@@ -36,3 +36,10 @@ Small suite of note-taking tools for session-based test management (SBTM)
 ## More on SBTM
 - <http://www.satisfice.com/articles/sbtm.pdf>
 - <http://www.satisfice.com/sbtm/>
+
+
+## Markdown tools
+- grip - `grip MDFILE` - <https://github.com/joeyespo/grip>
+- typora - `typora MDFILEorFOLDER - <https://typora.io/>
+- mdv - `mdv MDFILE` - <https://github.com/axiros/terminal_markdown_viewer>
+- pandoc & lynx - `pandoc README.md | lynx -stdin`
