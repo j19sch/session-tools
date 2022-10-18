@@ -12,7 +12,7 @@ class CSVWriter:
         self.writer: csv._writer  # type: ignore
 
     def __enter__(self) -> "CSVWriter":
-        self.csv_file = open(self.path_to_file, "w")
+        self.csv_file = open(self.path_to_file, "w", newline='')
         self.writer = csv.writer(
             self.csv_file, delimiter=";", quotechar="|", quoting=csv.QUOTE_MINIMAL
         )
